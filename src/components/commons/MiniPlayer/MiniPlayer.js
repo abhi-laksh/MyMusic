@@ -10,7 +10,11 @@ import NextButton from "./NextButton";
 import CurrentSong from "./CurrentSong";
 import ViewGradient from "../ViewGradient";
 import PopOuts from "./PopOuts";
+import { connect } from "react-redux";
 // import SongRow from "./SongRow";
+import TrackPlayer from 'react-native-track-player';
+import { updatePlayer } from "../../../actions/player";
+import AsyncStorage from "@react-native-community/async-storage";
 
 
 
@@ -46,10 +50,24 @@ const styles = StyleSheet.create({
 class MiniPlayer extends React.Component {
     constructor(props) {
         super(props);
+        // this._togglePlayPause = this._togglePlayPause.bind(this)
+    }
+
+    _togglePlayPause() {
+        // (this.props.state == TrackPlayer.STATE_PAUSED) || (this.props.state == TrackPlayer.STATE_STOPPED)
+        if ((this.props.state == TrackPlayer.STATE_PAUSED) || (this.props.state == TrackPlayer.STATE_STOPPED)) {
+            TrackPlayer.play();
+        } else {
+            TrackPlayer.pause();
+        }
+    }
+    async _skipToNext() {
+        // (this.props.state == TrackPlayer.STATE_PAUSED) || (this.props.state == TrackPlayer.STATE_STOPPED)
+        await TrackPlayer.skipToNext();
     }
     render() {
-        const { theme, currentTheme, navigation } = this.props
-        console.log("Miniplayer")
+        const { theme, currentTheme, navigation, songName, songArtist } = this.props
+        // console.log("Miniplayer")
         return (
             <ViewGradient
                 gradientStyle={styles.parentGradientStyle}
@@ -61,7 +79,11 @@ class MiniPlayer extends React.Component {
                 <View
                     style={styles.currentSongParent}
                 >
-                    <CurrentSong onPress={() => navigation.navigate('Player')} songName={"A Song NameA Song NameA Song NameA Song Name"} songAuthor="Author Name" />
+                    <CurrentSong
+                        onPress={() => navigation.navigate('Player')}
+                        songName={this.props.track ? this.props.track.title : "Unknown Title"}
+                        songAuthor={this.props.track ? this.props.track.artist : "Unknown Artist"}
+                    />
                 </View>
 
                 <View
@@ -69,11 +91,17 @@ class MiniPlayer extends React.Component {
                 >
                     <PlayPauseButton
                         style={styles.controls}
+                        isPlaying={
+                            !((this.props.state == TrackPlayer.STATE_PAUSED)
+                                || (this.props.state == TrackPlayer.STATE_STOPPED))
+                        }
+                        onPress={this._togglePlayPause.bind(this)}
                     // color={theme.pallete.primary.light}
                     // color={currentTheme.text.primary}
                     />
                     <NextButton
                         style={styles.controls}
+                        onPress={this._skipToNext.bind(this)}
                     // color={theme.pallete.secondary.light}
                     // color={currentTheme.text.primary}
                     />
@@ -83,4 +111,15 @@ class MiniPlayer extends React.Component {
         );
     }
 }
-export default withTheme(MiniPlayer);
+
+function mapStateToProps(state) {
+
+    let currentTrack = state.player.currentTrack;
+    // await TrackPlayer.add(data.musicList);
+    // const tracks = { ...state.library.tracks };
+    return {
+        state: state.player.state,
+        track: currentTrack ? currentTrack : null
+    };
+}
+export default connect(mapStateToProps)(withTheme(MiniPlayer));

@@ -6,16 +6,15 @@ import SharpBG from '../SharpBG';
 import { View } from 'react-native';
 
 function PlayPauseButton(props) {
-    const [playPause, setPlayPause] = useState(true);
-    const { theme, currentTheme, color, ...others } = props
+    const { theme, currentTheme, isPlaying = false, color, onPress, ...others } = props;
     const button = (
         <View>
             <SharpBG style={{ borderRadius: 0, }} angle={45} />
             <Button
-                onPress={() => setPlayPause(!playPause)}
+                onPress={onPress}
                 {...others}
             >
-                <FontelloIcon name={playPause ? "pause" : "play"} size={20} color={color || currentTheme.text.primary} />
+                <FontelloIcon name={isPlaying ? "pause" : "play"} size={20} color={color || currentTheme.text.primary} />
             </Button>
         </View>
     );

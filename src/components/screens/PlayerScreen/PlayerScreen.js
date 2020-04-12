@@ -4,6 +4,8 @@ import { withTheme } from "../../globals/ThemeProvider";
 import PlayerControl from "./PlayerControl";
 import AlbumImage from "./AlbumImage";
 import SongProgressBar from "./SongProgressBar";
+import { connect } from "react-redux";
+import TrackPlayer from 'react-native-track-player';
 
 const styles = StyleSheet.create({
     parent: {
@@ -45,4 +47,7 @@ class PlayerScreen extends React.Component {
         );
     }
 }
+
+
+
 export default withTheme(PlayerScreen);

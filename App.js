@@ -4,7 +4,10 @@ import {
   Text,
   StatusBar,
   NativeModules,
+  AppState
 } from 'react-native';
+import { Provider } from 'react-redux';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -13,29 +16,25 @@ import { ThemeContext, theme } from './src/components/globals/ThemeProvider';
 
 import AsyncStorage from '@react-native-community/async-storage';
 import DrawerNavigator from './src/components/navigations/DrawerNavigator';
-import MiniPlayer from './src/components/commons/MiniPlayer/MiniPlayer';
-import PlayerScreen from './src/components/screens/PlayerScreen/PlayerScreen';
-import HeaderLayout from './src/components/commons/HeaderLayout';
-import MyAppText from './src/components/commons/MyAppText';
-import HomeScreenHeader from './src/components/screens/Home/Header';
-import PlayerScreenHeader from './src/components/screens/PlayerScreen/Header';
 import * as RNFS from 'react-native-fs';
+
 import { request, PERMISSIONS } from 'react-native-permissions';
 import { abs } from 'react-native-reanimated';
 
 import GetMusicDetails from './src/components/commons/GetMusicDetails';
-import TrackPlayer from 'react-native-track-player';
+import { updatePlayer, initializePlayer } from './src/actions/player';
+
 const musicLocations = {}
 const musicList = [];
 let count = 0;
 
 async function scanDir(pathOfDirToScan, data = { musicLocations: [], musicList: [] }) {
+
   const readedFilesAndDir = await RNFS.readDir(pathOfDirToScan);
   const extensions = "mp3|wav|pcm|aiff|aac|ogg|wma";
   for (let i = 0; i < readedFilesAndDir.length; i++) {
     if (readedFilesAndDir[i].isDirectory()) {
       const directoryPath = pathOfDirToScan + '/' + readedFilesAndDir[i].name;
-      // data.directory.push(directoryPath);
       data = await scanDir(directoryPath, data);
     } else {
       const name = readedFilesAndDir[i].name;
@@ -45,9 +44,7 @@ async function scanDir(pathOfDirToScan, data = { musicLocations: [], musicList: 
         const dir = path.substring(0, (path.lastIndexOf("/") + 1))
 
         if (data.musicLocations.indexOf(dir) === -1) {
-          // const allFiles = await RNFS.readdir(path.substring(0, (path.lastIndexOf("/") + 1)));
           data.musicLocations.push(dir);
-          // console.log(data.musicLocations)
         }
 
         const { artist, album, cover, duration, title } = await GetMusicDetails.getMetadata(path)
@@ -75,6 +72,9 @@ async function scanDir(pathOfDirToScan, data = { musicLocations: [], musicList: 
 
 
 class App extends React.Component {
+
+  static store = null;
+
   constructor(props) {
     super(props);
 
@@ -91,21 +91,35 @@ class App extends React.Component {
       toggleTheme: this.toggleTheme,
     }
   }
+
+  componentWillUnmount() {
+    AppState.removeEventListener('change', this._handleStateChange);
+  }
+
+  _handleStateChange(appState) {
+    if (appState == 'active') {
+      App.store.dispatch(updatePlayer());
+    }
+  }
+
   async componentDidMount() {
     // await AsyncStorage.clear();
+
+    AppState.addEventListener('change', this._handleStateChange)
+
     const [
       [keyTheme, curTheme],
       [keyMusic, music_items]
     ] = await AsyncStorage.multiGet(['currentTheme', 'musicData']);
 
-    if (!music_items) {
+    // if (!music_items) {
 
-      console.log("no MusicItem")
+    //   console.log("no MusicItem")
 
-      const musicData = await scanDir(RNFS.ExternalStorageDirectoryPath);
+    //   const musicData = await scanDir(RNFS.ExternalStorageDirectoryPath);
 
-      AsyncStorage.setItem('musicData', JSON.stringify(musicData));
-    }
+    //   AsyncStorage.setItem('musicData', JSON.stringify(musicData));
+    // }
 
     if (!curTheme) {
       console.log("no curTheme");
@@ -125,16 +139,22 @@ class App extends React.Component {
 
   render() {
     return (
-      <>
+      <Provider store={App.store}>
         <ThemeContext.Provider value={this.state} >
           <StatusBar backgroundColor={this.state.currentTheme.background} barStyle={this.state.currentTheme.name === "light" ? "dark-content" : "light-content"} />
           <NavigationContainer>
             <DrawerNavigator />
           </NavigationContainer>
         </ThemeContext.Provider>
-      </>
+      </Provider>
     );
   }
+}
+
+
+module.exports = function (store) {
+  App.store = store;
+  return App;
 }
 
 export default App;

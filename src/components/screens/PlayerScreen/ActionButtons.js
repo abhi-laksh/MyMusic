@@ -21,8 +21,7 @@ const styles = StyleSheet.create({
         height: "100%"
     }
 })
-
-export default function ActionButton(props) {
+function ActionButton(props) {
     const {
         children,
         buttonSize = 48,
@@ -31,9 +30,9 @@ export default function ActionButton(props) {
         gradientViewStyle,
         onPress,
         maskedViewProps,
+        maskElement,
         ...others
     } = props;
-
     return (
         <Button
             underlayColor={"transparent"}
@@ -56,68 +55,21 @@ export default function ActionButton(props) {
                 gradientViewStyle={gradientViewStyle}
                 angle={30}
                 locations={[0.15, 1]}
+                maskElement={maskElement}
                 {...maskedViewProps}
             >
-                {children}
+                {/* {children} */}
             </GradientText>
         </Button>
     )
 }
 
+
+
+export default ActionButton;
 /*
 
-        <ViewGradient
-            gradientStyle={[
-                {
-                    width: buttonSize,
-                    height: buttonSize,
-                    borderRadius: buttonSize,
-                },
-                (top ? { top: top } : null),
-                (left ? { left: left } : null),
-                (bottom ? { bottom: bottom } : null),
-                (right ? { right: right } : null),
-                gradientStyle
-            ]}
-            viewStyle={[
-                {
-                    padding: 0,
-                    width: "100%",
-                    height: "100%",
-                    borderRadius: buttonSize,
-                },
-                gradientViewStyle
 
-            ]}
-            onlyBorder={isToggler ? (typeof toggle === "boolean" && !toggle) : true}
-            borderWidth={borderWidth}
-        >
-            {
-                (!isToggler || (!toggle))
-                    ? (
-                        <SharpBG
-                            style={{
-                                borderRadius: buttonSize,
-                            }}
-                            angle={60}
-                        />
-                    )
-                    : null
-            }
 
-            <Button
-                style={[
-                    {
-                        height: "100%",
-                        borderRadius: buttonSize,
-                        alignItems: "center",
-                        justifyContent: "center",
-                    },
-                    buttonStyle
-                ]}
-                onPress={onPress}
-            >
-                {children}
-            </Button>
-        </ViewGradient>
+
 */

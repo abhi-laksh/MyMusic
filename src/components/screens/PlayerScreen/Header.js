@@ -7,6 +7,8 @@ import { withTheme } from "../../globals/ThemeProvider";
 import Button from "../../commons/Button";
 import HeaderLayout from "../../commons/HeaderLayout";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { connect } from "react-redux";
+import TrackPlayer from 'react-native-track-player';
 const styles = StyleSheet.create({
     parentView: {
         padding: 0,
@@ -44,7 +46,7 @@ const styles = StyleSheet.create({
 })
 function Header(props) {
 
-    const { theme, currentTheme, songName = "Unknown", navigation } = props;
+    const { theme, currentTheme, navigation } = props;
     const [isShuffle, setShuffle] = useState(false);
     const [isLoop, setLoop] = useState(false);
 
@@ -75,7 +77,7 @@ function Header(props) {
                     variant="semiBold"
                     numberOfLines={1}
                 >
-                    {songName}
+                    {props.track ? props.track.title : "Unknown Title"}
                 </MyAppText>
 
                 <Button
@@ -86,7 +88,6 @@ function Header(props) {
                         }
                     ]}
                     onPress={() => console.log("Hii")}
-
                 >
                     <FontelloIcon name="menu-dots" size={14} color={color} />
                 </Button>
@@ -95,7 +96,16 @@ function Header(props) {
     );
 }
 
-export default withTheme(Header);
+function mapStateToProps(state) {
+    const currentTrack = state.player.currentTrack;
+    return {
+        state: state.player.state,
+        track: currentTrack ? currentTrack : null
+    };
+}
+
+
+export default connect(mapStateToProps)(withTheme(Header));
 
 /*
 <View

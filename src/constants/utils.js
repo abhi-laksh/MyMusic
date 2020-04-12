@@ -1,20 +1,41 @@
+import React from 'react';
+import {
+    View,
+    Text,
+    StatusBar,
+    NativeModules,
+} from 'react-native';
+import { Provider } from 'react-redux';
+
+import * as RNFS from 'react-native-fs';
+import GetMusicDetails from '../components/commons/GetMusicDetails';
 
 
+var count = 0;
+export async function loadTracks(pathOfDirToScan = RNFS.ExternalStorageDirectoryPath, data = { musicLocations: [], musicList: [] }) {
 
-
-export async function loadTracks(pathOfDirToScan, data = { musicLocations: [], musicList: [] }) {
     const readedFilesAndDir = await RNFS.readDir(pathOfDirToScan);
+
     const extensions = "mp3|wav|pcm|aiff|aac|ogg|wma";
+
     for (let i = 0; i < readedFilesAndDir.length; i++) {
+
         if (readedFilesAndDir[i].isDirectory()) {
+
             const directoryPath = pathOfDirToScan + '/' + readedFilesAndDir[i].name;
+
             // data.directory.push(directoryPath);
             data = await loadTracks(directoryPath, data);
         } else {
+
             const name = readedFilesAndDir[i].name;
+
             const ext = name.split(".").pop();
+
             if (extensions.includes(ext) && ((readedFilesAndDir[i].size) / 1048576) >= 2) {
+
                 const path = readedFilesAndDir[i].path
+
                 const dir = path.substring(0, (path.lastIndexOf("/") + 1))
 
                 if (data.musicLocations.indexOf(dir) === -1) {
@@ -22,10 +43,8 @@ export async function loadTracks(pathOfDirToScan, data = { musicLocations: [], m
                     data.musicLocations.push(dir);
                     // console.log(data.musicLocations)
                 }
-
                 const { artist, album, cover, duration, title } = await GetMusicDetails.getMetadata(path)
                 count += 1;
-
                 const fileDetails = {
                     id: String(count),
                     title: title,
@@ -46,15 +65,23 @@ export async function loadTracks(pathOfDirToScan, data = { musicLocations: [], m
     return data;
 }
 
+export function sortMusicList(data) {
+    console.log("Sorting....")
+    return data.sort((a, b) => {
+        return a.title.toLowerCase().localeCompare(b.title.toLowerCase());
+    })
+}
+
 export function formatTime(seconds) {
 
     function formatTwoDigits(n) {
-        return n < 10 ? '0' + n : n;
+        return n < 10 ? '0' + String(n) : (n);
     }
 
-    const ss = Math.floor(seconds) % 60;
-    const mm = Math.floor(seconds / 60) % 60;
-    const hh = Math.floor(seconds / 3600);
+    const ms = Math.floor(seconds) / 1000;
+    const ss = Math.floor(ms) % 60;
+    const mm = Math.floor(ms / 60) % 60;
+    const hh = Math.floor(ms / 3600);
 
     if (hh > 0) {
         return hh + ':' + formatTwoDigits(mm) + ':' + formatTwoDigits(ss);
