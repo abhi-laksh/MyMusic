@@ -3,12 +3,12 @@ import {
     PLAYLIST_STATUS,
 } from '../actions/playlists';
 
-export function playlistReducer(state = {}, action) {
+export function playlistReducer(state = { playlists: [], syncing: false, error: null }, action) {
     switch (action.type) {
         case UPDATE_PLAYLIST:
             return {
                 ...state,
-                playlists: playlists,
+                playlists: action.playlists,
                 syncing: false,
                 error: null,
             };

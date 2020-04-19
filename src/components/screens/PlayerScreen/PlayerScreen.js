@@ -16,10 +16,11 @@ const styles = StyleSheet.create({
         paddingBottom: 0,
     },
     childView: {
-        flex: 0.75,
+        // flex: 1,
         width: "100%",
         alignItems: "center",
-        justifyContent: "space-between",
+        justifyContent: "flex-end",
+        // backgroundColor: "#ff0",
     }
 })
 
@@ -29,14 +30,23 @@ class PlayerScreen extends React.Component {
     }
     render() {
         const { theme, currentTheme } = this.props;
+        // console.log("PlayerScreen");
         return (
             <View style={[
                 styles.parent,
-                {
-                    backgroundColor: currentTheme.background,
-                }
+                { backgroundColor: currentTheme.background, },
+                // { backgroundColor: "#10e" }
             ]}>
-                <AlbumImage />
+                <View
+                    style={{
+                        flex: 1,
+                        alignItems: "center",
+                        justifyContent: "center",
+                    }}
+                >
+                    <AlbumImage />
+                </View>
+                {/* <AlbumImage /> */}
                 <View
                     style={styles.childView}
                 >

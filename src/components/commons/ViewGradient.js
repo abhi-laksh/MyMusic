@@ -28,9 +28,9 @@ const ViewGradient = (props) => {
 
     return (
         <LinearGradient
-            colors={!disabled ? colors : ["#aaa", "#aaa"]}
+            colors={!disabled ? colors : [currentTheme.text.disabled, currentTheme.text.disabled]}
             style={[
-                (disabled ? { opacity: 0.6 } : null),
+                (disabled ? { opacity: 0.85 } : null),
                 {
                     padding: all ? borderWidth : 0,
                 },

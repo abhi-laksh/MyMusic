@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
 const MyAppText = (props) => {
     const {
         fontName = "montserrat",
-        variant = "regular",
+        variant = "medium",
         size = 16,
         style,
         children,

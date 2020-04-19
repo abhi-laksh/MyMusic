@@ -5,13 +5,24 @@ import HomeScreenHeader from '../screens/Home/Header';
 import PlayerScreen from '../screens/PlayerScreen/PlayerScreen';
 import PlayerScreenHeader from '../screens/PlayerScreen/Header';
 import { HomeStack, PlayerStack } from './StackNavigator';
+import { withTheme } from '../globals/ThemeProvider';
+import MyDrawerContent from './MyDrawerContent';
 
 const Drawer = createDrawerNavigator();
 
 function MyDrawer(props) {
-    const { theme } = props
+    const { theme, currentTheme } = props
     return (
-        <Drawer.Navigator>
+        <Drawer.Navigator
+            drawerContent={(props) => <MyDrawerContent {...props} />}
+            drawerStyle={{
+                // backgroundColor: currentTheme.background
+                width: "85%",
+
+                borderTopRightRadius: 96,
+                borderBottomRightRadius: 96,
+            }}
+        >
             <Drawer.Screen
                 name="Home"
                 component={HomeStack}
@@ -20,11 +31,14 @@ function MyDrawer(props) {
                 name="Player"
                 component={PlayerStack}
                 options={{
-                    gestureEnabled: false,
+                    // gestureEnabled: false,
+
                 }}
+
+
             />
         </Drawer.Navigator>
     );
 }
 
-export default MyDrawer;
+export default withTheme(MyDrawer);

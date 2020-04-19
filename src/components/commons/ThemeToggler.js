@@ -62,7 +62,7 @@ function ThemeToggler(props) {
             viewStyle={styles.gradientStyleView}
             onlyBorder={!isOn}
             borderWidth={1}
-            angle={30}
+            angle={30} 
         >
             <Button
                 onPress={toggleTheme}

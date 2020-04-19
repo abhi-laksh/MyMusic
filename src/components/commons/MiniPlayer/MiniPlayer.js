@@ -20,23 +20,20 @@ import AsyncStorage from "@react-native-community/async-storage";
 
 const styles = StyleSheet.create({
     parentGradientStyle: {
-        zIndex: 2
+        position: "relative",
+
     },
     parentViewStyle: {
         flexDirection: "row",
         height: 60,
-        position: "relative",
         padding: 0,
-        zIndex: 2
     },
     currentSongParent: {
         flexGrow: 1,
-        zIndex: 2
     },
     controlsParent: {
         flexDirection: "row",
         height: "100%",
-        zIndex: 2
     },
     controls: {
         height: "100%",
@@ -109,7 +106,7 @@ class MiniPlayer extends React.Component {
                 <PopOuts />
             </ViewGradient>
         );
-    }
+    } 
 }
 
 function mapStateToProps(state) {

@@ -5,25 +5,27 @@ import Button from "../Button";
 import { withTheme } from "../../globals/ThemeProvider";
 import ViewGradient from "../ViewGradient";
 import SharpBG from "../SharpBG";
+import { connect } from "react-redux";
+import { addTracksToFavourites, removeTracksFromFavourites, toggleFavourites } from "../../../actions/favourites";
+import AsyncStorage from "@react-native-community/async-storage";
 
 
 
 const styles = StyleSheet.create({
     mostParent: {
-        width: 60,
+        width: 80,
         height: 30,
         position: "absolute",
         top: -30,
         left: "50%",
-        marginLeft: -30,
-        zIndex: 1,
+        marginLeft: -40,
+        zIndex: 1
     },
     popTogglerGradient: {
         width: "100%",
         height: "100%",
         borderTopLeftRadius: 60,
         borderTopRightRadius: 60,
-        zIndex: 1,
     },
     popTogglerView: {
         borderTopLeftRadius: 60,
@@ -34,7 +36,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         overflow: "hidden",
-        zIndex: 1,
+        // zIndex: 1,
     },
     popToggler: {
         width: 120,
@@ -66,18 +68,6 @@ const styles = StyleSheet.create({
     popButtonSharpBG: {
         borderRadius: 64,
     },
-    popButtonSharpBG: {
-        borderRadius: 64,
-    },
-    popButtonSharpBG: {
-        borderRadius: 64,
-    },
-    popButtonSharpBG: {
-        borderRadius: 64,
-    },
-    popButtonSharpBG: {
-        borderRadius: 64,
-    },
 })
 
 class PopsOut extends React.Component {
@@ -89,23 +79,19 @@ class PopsOut extends React.Component {
         Animated.sequence([
             Animated.timing(this.mode, {
                 toValue: this.mode._value === 0 ? 1 : 0,
-                duration: 200
-            })
-        ]).start();
-    }
-    handlePopsIn = () => {
-        Animated.sequence([
-            Animated.timing(this.mode, {
-                toValue: 0,
                 duration: 200,
-                delay: 2000
             })
         ]).start();
     }
+
     render() {
         const { theme, currentTheme } = this.props;
-
         const iconColor = currentTheme.text.primary;
+        const isFav = this.props.isFavourite;
+
+        // console.log("favourites ", this.props.favourites, this.props.currentTrack);
+
+        const themeColor = currentTheme.name === "light" ? theme.pallete.secondary.main : theme.pallete.primary.main
 
         const rotate = this.mode.interpolate({
             inputRange: [0, 1],
@@ -133,31 +119,6 @@ class PopsOut extends React.Component {
                 style={styles.mostParent}
             >
 
-                <ViewGradient
-                    gradientStyle={styles.popTogglerGradient}
-                    viewStyle={styles.popTogglerView}
-                    onlyBorder
-                    top
-                    left
-                    right
-                    borderWidth={1}
-                >
-                    <Button
-                        onPress={this.handlePopsOut}
-                        // onPressIn={this.handlePopsOut}
-                        // onPressOut={this.handlePopsIn}
-                        style={styles.popToggler}
-                    >
-                        <Animated.View
-                            style={{
-                                transform: [{ rotate: rotate }]
-                            }}
-                        >
-                            <FontelloIcon name="arrow-up" size={12} color={iconColor} />
-                        </Animated.View>
-                    </Button>
-                </ViewGradient>
-
                 <Animated.View
                     style={{
                         position: "absolute",
@@ -165,6 +126,7 @@ class PopsOut extends React.Component {
                         left: playlistX,
                         transform: [{ scale: scale }],
                     }}
+
                 >
                     <ViewGradient
                         gradientStyle={[
@@ -178,7 +140,7 @@ class PopsOut extends React.Component {
                             onPress={() => console.log("Button playlist")}
                             style={styles.popButton}
                         >
-                            <FontelloIcon name="add-queue" size={18} color={iconColor} />
+                            <FontelloIcon name="add-lyrics" size={18} color={iconColor} />
                         </Button>
                     </ViewGradient>
                 </Animated.View>
@@ -193,14 +155,20 @@ class PopsOut extends React.Component {
                     <ViewGradient
                         gradientStyle={styles.popChildButtonsGradient}
                         viewStyle={styles.popChildButtonsView}
-                        onlyBorder
+                        onlyBorder={!isFav}
                     >
-                        <SharpBG style={styles.popButtonSharpBG} />
+                        <SharpBG style={[
+                            styles.popButtonSharpBG,
+                            // { opacity: 0.7 }
+                        ]}
+                        // colors={[theme.pallete.primary.main, theme.pallete.secondary.light]}
+                        />
                         <Button
-                            onPress={() => console.log("Button heart")}
+                            onPress={() => this.props.dispatch(toggleFavourites(this.props.currentTrack))}
+                            // onPress={() => console.log("Button heart")}
                             style={styles.popButton}
                         >
-                            <FontelloIcon name="heart" size={18} color={iconColor} />
+                            <FontelloIcon name="heart" size={18} color={isFav ? themeColor : iconColor} />
                         </Button>
                     </ViewGradient>
                 </Animated.View>
@@ -223,15 +191,49 @@ class PopsOut extends React.Component {
                             onPress={() => console.log("Button close")}
                             style={styles.popButton}
                         >
-                            <FontelloIcon name="playlist" size={18} color={iconColor} />
+                            <FontelloIcon name="add-playlist" size={18} color={iconColor} />
                         </Button>
                     </ViewGradient>
                 </Animated.View>
+
+                <ViewGradient
+                    gradientStyle={styles.popTogglerGradient}
+                    viewStyle={styles.popTogglerView}
+                    onlyBorder
+                    top
+                    left
+                    right
+                    borderWidth={1}
+                >
+                    <Button
+                        onPress={this.handlePopsOut.bind(this)}
+                        style={styles.popToggler}
+                    >
+                        <Animated.View
+                            style={{
+                                transform: [{ rotate: rotate }]
+                            }}
+                        >
+                            <FontelloIcon name="arrow-up" size={12} color={iconColor} />
+                        </Animated.View>
+                    </Button>
+                </ViewGradient>
             </View>
         );
     }
 }
-export default withTheme(PopsOut);
+
+function mapStateToProps(state) {
+    const favourites = state.favourites.favourites;
+    const currentTrack = state.player.currentTrack;
+
+
+    const isFav = (currentTrack && currentTrack.id && JSON.stringify(favourites).includes(currentTrack.id))
+
+    return { currentTrack: currentTrack, isFavourite: isFav };
+}
+
+export default connect(mapStateToProps)(withTheme(PopsOut));
 
 /*
 */

@@ -12,6 +12,7 @@ import GetMusicDetails from '../components/commons/GetMusicDetails';
 
 
 var count = 0;
+// console.log("count--------------", count)
 export async function loadTracks(pathOfDirToScan = RNFS.ExternalStorageDirectoryPath, data = { musicLocations: [], musicList: [] }) {
 
     const readedFilesAndDir = await RNFS.readDir(pathOfDirToScan);
@@ -46,7 +47,7 @@ export async function loadTracks(pathOfDirToScan = RNFS.ExternalStorageDirectory
                 const { artist, album, cover, duration, title } = await GetMusicDetails.getMetadata(path)
                 count += 1;
                 const fileDetails = {
-                    id: String(count),
+                    id: String(path),
                     title: title,
                     url: String(`file://${path}`),
                     size: readedFilesAndDir[i].size,

@@ -1,5 +1,6 @@
 import TrackPlayer from 'react-native-track-player';
 import AsyncStorage from '@react-native-community/async-storage';
+import _ from 'lodash';
 
 export const PLAYLIST_STATUS = 'PLAYLIST_STATUS';
 export const UPDATE_PLAYLIST = 'UPDATE_PLAYLIST';
@@ -29,22 +30,26 @@ function findPlaylist(playlists, PLName) {
     if (PLIndex > -1) {
         PLObject = playlists[PLIndex];
         return { index: PLIndex, playlist: PLObject };
+    } else {
+        return { index: -1, playlists: null }
     }
 }
 
 export function addNewPlaylist(name, tracks) {
     return async (dispatch, getState) => {
         const state = getState();
-        const playlists = state.playlists;
+        const [...playlists] = state.playlists.playlists;
 
         dispatch(playlistStatus(true));
 
-        if (playlists) {
+        if (playlists.length > 0) {
             const { index } = findPlaylist(playlists, name);
             if (index < 0) {
                 playlists.push({ name: name, tracks: tracks });
                 dispatch(updatePlaylists(playlists));
             }
+        } else {
+            dispatch(updatePlaylists([{ name: name, tracks: tracks }]));
         }
     }
 }
@@ -52,7 +57,7 @@ export function addNewPlaylist(name, tracks) {
 export function deletePlaylist(name) {
     return async (dispatch, getState) => {
         const state = getState();
-        const playlists = state.playlists;
+        const [...playlists] = state.playlists.playlists;
 
         dispatch(playlistStatus(true));
 
@@ -71,7 +76,7 @@ export function deletePlaylist(name) {
 export function modifyPlaylist(name, newName) {
     return async (dispatch, getState) => {
         const state = getState();
-        const playlists = state.playlists;
+        const [...playlists] = state.playlists.playlists;
 
         dispatch(playlistStatus(true));
 
@@ -87,7 +92,7 @@ export function modifyPlaylist(name, newName) {
 export function addTracksToPlaylist(name, tracks) {
     return async (dispatch, getState) => {
         const state = getState();
-        const playlists = state.playlists;
+        const [...playlists] = state.playlists.playlists;
 
         dispatch(playlistStatus(true));
 
@@ -103,7 +108,7 @@ export function addTracksToPlaylist(name, tracks) {
 export function removeTracksFromPlaylist(name, trackId) {
     return async (dispatch, getState) => {
         const state = getState();
-        const playlists = state.playlists;
+        const [...playlists] = state.playlists.playlists;
 
         dispatch(playlistStatus(true));
 

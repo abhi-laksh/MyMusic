@@ -21,7 +21,6 @@ const styles = StyleSheet.create({
     },
     searchParent: {
         flex: 1,
-
         height: 36,
         borderRadius: 6,
         overflow: "hidden",

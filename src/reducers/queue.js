@@ -3,7 +3,7 @@ import {
     QUEUE_STATUS
 } from '../actions/queue';
 
-export function queueReducer(state = {}, action) {
+export function queueReducer(state = { queue: [], syncing: false, error: null }, action) {
     switch (action.type) {
         case UPDATE_QUEUE:
             return {

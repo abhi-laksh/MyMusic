@@ -1,7 +1,7 @@
 import React from 'react';
-import { TouchableHighlight } from "react-native-gesture-handler";
+import { TouchableHighlight } from "react-native";
 // import { TouchableHighlight } from "react-native";
-import { withTheme } from '../globals/ThemeProvider';
+import { withTheme } from '../../globals/ThemeProvider';
 function Button(props) {
     const { children, disabled, onPress, underlayColor, style, theme, currentTheme, ...others } = props;
     const contrastValue = (currentTheme.name === "dark") ? 0.08 : -0.05;

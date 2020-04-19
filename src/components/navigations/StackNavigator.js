@@ -9,15 +9,9 @@ const Stack = createStackNavigator();
 
 export const HomeStack = () => (
     <Stack.Navigator
-        screenOptions={{
-            gestureEnabled: false
-        }}
     >
         <Stack.Screen options={
             {
-                cardStyle: {
-                    // backgroundColor: theme.background
-                },
                 header: ({ navigation }) => <HomeScreenHeader navigation={navigation} />
             }
         }
@@ -32,9 +26,6 @@ export const PlayerStack = () => (
     >
         <Stack.Screen options={
             {
-                cardStyle: {
-                    // backgroundColor: theme.background
-                },
                 header: ({ navigation, scene }) => (<PlayerScreenHeader navigation={navigation} songName="labore et dolore labore et dolore labore et dolore labore et dolore labore et dolore labore et dolore " />),
             }
         }

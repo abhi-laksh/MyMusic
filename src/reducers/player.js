@@ -8,7 +8,7 @@ import {
 
 
 
-export function libraryReducer(state = {}, action) {
+export function libraryReducer(state = { tracks: [], fetching: false, error: null }, action) {
     switch (action.type) {
         case UPDATE_LIBRARY:
             return {
@@ -28,7 +28,7 @@ export function libraryReducer(state = {}, action) {
     }
 }
 
-export function playerReducer(state = {}, action) {
+export function playerReducer(state = { init: false, state: null, currentTrack: null }, action) {
     switch (action.type) {
         case PLAYER_INIT:
             return {

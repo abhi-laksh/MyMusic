@@ -4,7 +4,7 @@ import {
 } from '../actions/favourites';
 
 
-export function favouritesReducer(state = {}, action) {
+export function favouritesReducer(state = { favourites: [], syncing: false, error: null }, action) {
     switch (action.type) {
         case UPDATE_FAVOURITES:
             return {
@@ -14,7 +14,7 @@ export function favouritesReducer(state = {}, action) {
                 error: null,
             };
         case FAVOURITES_STATUS:
-            return {
+            return { 
                 ...state,
                 syncing: action.syncing,
                 error: action.error

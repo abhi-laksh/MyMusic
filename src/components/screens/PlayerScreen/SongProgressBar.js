@@ -10,7 +10,6 @@ import { withTheme } from "../../globals/ThemeProvider";
 import Button from "../../commons/Button";
 import SharpBG from "../../commons/SharpBG";
 import Thumbnail from "../../commons/Thumbnail";
-import ActionButton from "./ActionButtons";
 import PlayerControl from "./PlayerControl";
 import AlbumImage from "./AlbumImage";
 import Slider from '@react-native-community/slider';
@@ -21,9 +20,10 @@ import { connect } from "react-redux";
 
 const styles = StyleSheet.create({
     parent: {
-        marginBottom: 16,
+        // marginBottom: 16,
         width: "100%",
         // backgroundColor:"#666",
+        // backgroundColor: "#f0f",
     },
     fullwidth: {
         width: "100%",
@@ -36,18 +36,6 @@ const styles = StyleSheet.create({
     timerText: {
         flex: 0
     },
-    fullwidth: {
-        width: "100%",
-    },
-    fullwidth: {
-        width: "100%",
-    },
-    fullwidth: {
-        width: "100%",
-    },
-    fullwidth: {
-        width: "100%",
-    }
 })
 
 
@@ -67,6 +55,13 @@ class SongProgressBar extends ProgressComponent {
         const mm = Math.floor(ms / 60);
 
         return { min: formatTwoDigits(mm), sec: formatTwoDigits(ss) };
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return (
+            (this.state.position !== nextState.position)
+            || (this.props.playerState !== nextProps.playerState)
+        );
     }
 
     formatPostion($sec) {
@@ -108,7 +103,7 @@ class SongProgressBar extends ProgressComponent {
         const progressTimer = this.formatPostion((this.state.position));
         const progress = this.getProgress();
 
-        console.log("duration : ", this.state.duration, "| progressTimer :", this.state.position);
+        // console.log("duration : ", this.state.duration, "| progressTimer :", this.state.position);
 
         return (
             <View
@@ -140,9 +135,9 @@ class SongProgressBar extends ProgressComponent {
                 >
                     <MyAppText
                         style={styles.timerText}
-                        size={12}
+                        size={14}
                         color={color}
-                        variant="medium"
+                        variant="semiBold"
                     >
                         {
                             progressTimer
@@ -152,7 +147,8 @@ class SongProgressBar extends ProgressComponent {
                     </MyAppText>
                     <MyAppText
                         style={styles.timerText}
-                        size={12}
+                        size={14}
+                        variant="semiBold"
                     >
                         {
                             duration
@@ -168,10 +164,12 @@ class SongProgressBar extends ProgressComponent {
 
 
 function mapStateToProps(state) {
+
     const currentTrack = state.player.currentTrack;
 
     return {
-        track: currentTrack ? currentTrack : null
+        track: currentTrack ? currentTrack : null,
+        playerState: state.player.state
     };
 }
 

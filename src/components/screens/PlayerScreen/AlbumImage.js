@@ -1,23 +1,19 @@
 import React from "react";
-import { View, ScrollView, StyleSheet } from "react-native";
-import MyAppText from "../../commons/MyAppText";
-import SongRow from "../../commons/SongRow";
-import MiniPlayer from "../../commons/MiniPlayer/MiniPlayer";
+import { StyleSheet } from "react-native";
 import FontelloIcon from "../../commons/FontelloIcon";
 import ViewGradient from "../../commons/ViewGradient";
-import ThemeToggler from "../../commons/ThemeToggler";
 import { withTheme } from "../../globals/ThemeProvider";
 import Button from "../../commons/Button";
 import SharpBG from "../../commons/SharpBG";
 import Thumbnail from "../../commons/Thumbnail";
-import ActionButton from "./ActionButtons";
-import PlayerControl from "./PlayerControl";
+import { connect } from "react-redux";
+import { toggleFavourites } from "../../../actions/favourites";
 
 const styles = StyleSheet.create({
     parentGradient: {
         width: 192,
         height: 192,
-        marginTop: 64,
+        // marginTop: 64,
         borderRadius: 16,
         alignSelf: "center"
     },
@@ -48,31 +44,10 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
     },
-    parentView: {
-        width: "100%",
-        height: "100%",
-        padding: 0,
-        borderRadius: 16,
-        overflow: "hidden",
-    },
-    parentView: {
-        width: "100%",
-        height: "100%",
-        padding: 0,
-        borderRadius: 16,
-        overflow: "hidden",
-    },
-    parentView: {
-        width: "100%",
-        height: "100%",
-        padding: 0,
-        borderRadius: 16,
-        overflow: "hidden",
-    }
 })
 
 function AlbumImage(props) {
-    const { theme, currentTheme, isFav = false } = props;
+    const { theme, currentTheme } = props;
     return (
         <ViewGradient
             gradientStyle={styles.parentGradient}
@@ -85,7 +60,7 @@ function AlbumImage(props) {
                 size={"100%"}
                 scale={"60%"}
             />
-            <ViewGradient
+            {/* <ViewGradient
                 gradientStyle={styles.heartGradient}
                 viewStyle={styles.heartGradientView}
                 angle={45}
@@ -97,13 +72,17 @@ function AlbumImage(props) {
                 {!isFav && <SharpBG angle={45} />}
                 <Button
                     style={styles.heartButton}
-                    onPress={() => console.log("Playlist")}
+                    onPress={() => props.dispatch(toggleFavourites(props.currentTrack))}
                 >
                     <FontelloIcon name="heart" size={16} color={isFav ? theme.pallete.common.white : currentTheme.text.primary} />
                 </Button>
-            </ViewGradient>
+            </ViewGradient> */}
         </ViewGradient>
     );
 }
-
-export default withTheme(AlbumImage)
+function mapStateToProps(state) {
+    const currentTrack = state.player.currentTrack;
+    const favourites = state.favourites.favourites;
+    return { currentTrack: currentTrack, favourites: favourites };
+}
+export default connect(mapStateToProps)(withTheme(AlbumImage));
