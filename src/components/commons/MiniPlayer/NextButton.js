@@ -7,15 +7,19 @@ import SharpBG from '../SharpBG';
 
 function NextButton(props) {
     // const [playPause, setPlayPause] = useState(true);
-    const { theme, color, currentTheme, onPress, ...others } = props
+    const { theme, color, currentTheme, disabled, onPress, ...others } = props
     return (
         <View>
-            <SharpBG style={{ borderRadius: 0, }} angle={45} />
             <Button
                 onPress={onPress}
+                disabled={disabled}
                 {...others}
             >
-                <FontelloIcon name="next" size={20} color={color || currentTheme.text.primary} />
+                <FontelloIcon
+                    name="next"
+                    size={20}
+                    color={!disabled ? (color || currentTheme.text.primary) : currentTheme.text.disabled}
+                />
             </Button>
         </View>
     );

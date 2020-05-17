@@ -7,18 +7,16 @@ import { View } from 'react-native';
 
 function PlayPauseButton(props) {
     const { theme, currentTheme, isPlaying = false, color, onPress, ...others } = props;
-    const button = (
+    return (
         <View>
-            <SharpBG style={{ borderRadius: 0, }} angle={45} />
+            {/* <SharpBG style={{ borderRadius: 0, }} angle={45} /> */}
             <Button
                 onPress={onPress}
                 {...others}
             >
-                <FontelloIcon name={isPlaying ? "pause" : "play"} size={20} color={color || currentTheme.text.primary} />
+                <FontelloIcon name={isPlaying ? "pause" : "play-my"} size={20} color={color || currentTheme.text.primary} />
             </Button>
         </View>
     );
-
-    return button;
 }
 export default withTheme(PlayPauseButton); 

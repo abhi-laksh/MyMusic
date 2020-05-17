@@ -23,7 +23,7 @@ import { updatePlayer, initializePlayer, libraryStatus, UPDATE_LIBRARY, updateLi
 import BackgroundFetch from 'react-native-background-fetch';
 import { loadTracks, sortMusicList } from './src/constants/utils';
 import { updateFavourites } from './src/actions/favourites';
-import { updateQueue, addToQueue } from './src/actions/queue';
+import { updateQueue, addToQueue, addMultipleToQueue } from './src/actions/queue';
 import { updatePlaylists } from './src/actions/playlists';
 
 class App extends React.Component {
@@ -62,8 +62,9 @@ class App extends React.Component {
 	async _syncFromLocalStorage() {
 		let data;
 		try {
-
-			data = await loadTracks();
+			// console.time("FETCH_SONG");
+			data = await loadTracks(); 
+			// console.timeEnd("FETCH_SONG");
 
 			sortMusicList(data.musicList);
 
@@ -88,9 +89,8 @@ class App extends React.Component {
 
 	makeEverythingReady = async () => {
 		try {
-			// await AsyncStorage.clear();
 
-			this.logInConsole("Getting Ready.");
+			// this.logInConsole("Getting Ready.");
 
 			let [
 				[$music_data, musicData],
@@ -114,13 +114,17 @@ class App extends React.Component {
 			if (musicData) {
 				// this.logInConsole("scanFile", await RNFS.scanFile(musicData.musicList[0].url))
 
-				App.store.dispatch(updateLibrary(musicData.musicList));
+				let syncedMusicList = musicData.musicList.filter(async (e) => {
+					return (await RNFS.exists(e.url));
+				});
 
-				this.logInConsole("lastPlayed", lastPlayed);
+				// App.store.dispatch(updateLibrary(musicData.musicList));
+				App.store.dispatch(updateLibrary(syncedMusicList));
+
+				// this.logInConsole("lastPlayed", lastPlayed);
+				lastPlayed = JSON.parse(lastPlayed);
 
 				if (lastPlayed) {
-
-					lastPlayed = JSON.parse(lastPlayed);
 
 					if (await RNFS.exists(lastPlayed.url)) {
 						App.store.dispatch(playerTrack(lastPlayed));
@@ -136,46 +140,63 @@ class App extends React.Component {
 
 				if (queue) {
 
-					let syncedQueue = queue.filter(async (e) => {
-						return (await RNFS.exists(e.url));
-					})
+					// let syncedQueue = queue.filter(async (e) => {
+					// 	return (await RNFS.exists(e.url));
+					// });
 
-					App.store.dispatch(updateQueue(queue));
+					let syncedQueue = syncedMusicList.filter((e) => JSON.stringify(queue).includes(e.id));
 
-					this.logInConsole("syncedQueue", syncedQueue)
+					App.store.dispatch(updateQueue(syncedQueue));
 				}
 
 				if (favourites) {
 
-					let syncedFavourites = favourites.filter(async (e) => {
-						return (await RNFS.exists(e.url));
-					});
+					// let syncedFavourites = favourites.filter(async (e) => {
+					// 	return (await RNFS.exists(e.url));
+					// });
+
+					let syncedFavourites = syncedMusicList.filter((e) => JSON.stringify(favourites).includes(e.id));
 
 					App.store.dispatch(updateFavourites(syncedFavourites));
-					this.logInConsole("syncedFavourites", syncedFavourites)
+					// this.logInConsole("syncedFavourites", syncedFavourites)
 				}
 
 				if (playlists) {
+					// let syncedPlaylists = playlists.map((eachPL) => {
+					// 	return {
+					// 		name: eachPL.name,
+					// 		tracks: (
+					// 			(eachPL.tracks.length > 0)
+					// 				? (
+					// 					eachPL.tracks.filter(async (e) => {
+					// 						return (await RNFS.exists(e.url));
+					// 					})
+					// 				)
+					// 				: []
+					// 		)
+					// 	}
+					// });
 					let syncedPlaylists = playlists.map((eachPL) => {
 						return {
 							name: eachPL.name,
 							tracks: (
 								(eachPL.tracks.length > 0)
-									? eachPL.tracks.filter(async (e) => {
-										return (await RNFS.exists(e.url));
-									})
+									? (
+										syncedMusicList.filter((e) => JSON.stringify(eachPL.tracks).includes(e.id))
+									)
 									: []
 							)
-						}
+						} 
 					});
-					this.logInConsole("syncedPlaylists", syncedPlaylists);
-					App.store.dispatch(updatePlaylists(playlists));
+
+					// this.logInConsole("syncedPlaylists", syncedPlaylists);
+					App.store.dispatch(updatePlaylists(syncedPlaylists));
 				}
 
-				this.logInConsole("lastPlayed", lastPlayed);
-				this.logInConsole("favourites", favourites);
-				this.logInConsole("queue", queue);
-				this.logInConsole("playlists", playlists);
+				// this.logInConsole("lastPlayed", lastPlayed);
+				// this.logInConsole("favourites", favourites);
+				// this.logInConsole("queue", queue);
+				// this.logInConsole("playlists", playlists);
 			}
 
 			// Check Redux
@@ -186,11 +207,11 @@ class App extends React.Component {
 				reduxFavourites = reduxState.favourites,
 				reduxPlaylists = reduxState.playlists,
 				reduxQueue = reduxState.queue;
-			this.logInConsole("currentTrack", reduxPlayer.currentTrack);
-			if (this.state.alreadyCheckedFS) {
+			// this.logInConsole("currentTrack", reduxPlayer.currentTrack);
+			if (!this.state.alreadyCheckedFS) {
 				try {
 					const firstLaunch = reduxLibrary.tracks.length <= 0;
-					this.logInConsole("Fetching from Device Storage ---APP.");
+					// this.logInConsole("Fetching from Device Storage ---APP.");
 					if (firstLaunch) {
 						App.store.dispatch(libraryStatus(true));
 					}
@@ -209,7 +230,7 @@ class App extends React.Component {
 			// App.store.dispatch(fetchLibrary());
 			// App.store.dispatch(updatePlayer());
 
-			console.log("================ END ===============");
+			// console.log("================ END ===============");
 
 		} catch (e) {
 			console.log("APP JS :", e);
@@ -217,6 +238,7 @@ class App extends React.Component {
 	}
 
 	fetchSavedTheme = async () => {
+		// await AsyncStorage.clear();
 		const curTheme = await AsyncStorage.getItem('currentTheme');
 
 		if (!curTheme) {
@@ -254,7 +276,7 @@ class App extends React.Component {
 
 	componentDidMount() {
 		AppState.addEventListener('change', this._handleStateChange);
-		
+
 		this.fetchSavedTheme()
 		// .then(() => {
 		// 	App.store.dispatch(initializePlayer());
@@ -269,7 +291,7 @@ class App extends React.Component {
 	}
 
 	render() {
-		this.logInConsole("APPP JSS LOADS")
+		// this.logInConsole("APPP JSS LOADS")
 		return (
 			<Provider store={App.store}>
 				<ThemeContext.Provider value={this.state} >

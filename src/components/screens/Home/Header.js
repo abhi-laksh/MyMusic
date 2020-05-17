@@ -18,17 +18,13 @@ const styles = StyleSheet.create({
         height: 36,
         justifyContent: "center",
         alignItems: "center",
+        flex: 0,
     },
     searchParent: {
         flex: 1,
         height: 36,
         borderRadius: 6,
         overflow: "hidden",
-        flexDirection: "row"
-    },
-    searchBox: {
-        paddingHorizontal: 8,
-        flex: 1,
     },
     searchButton: {
         width: 36,
@@ -49,11 +45,17 @@ const styles = StyleSheet.create({
         alignItems: "center",
     }
 })
+
 function Header(props) {
+
     const { theme, currentTheme, navigation } = props;
+
     const contrastValue = (theme.dark.background === currentTheme.background) ? 0.25 : -0.1;
+
     const contrast = theme.lightenDarken(contrastValue, theme.hexToRGB(currentTheme.background));
+
     const themeColor = currentTheme.name === "dark" ? theme.pallete.primary.main : theme.pallete.primary.light
+
     const currentColor = currentTheme.text.primary;
     // const navigation = useNavigation();
 
@@ -71,34 +73,34 @@ function Header(props) {
                     // onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
                     underlayColor={currentTheme.background}
                 >
-                    <FontelloIcon name="align-left-1" size={18} color={currentColor} />
+                    <FontelloIcon name="forwardburger" size={20} color={currentColor} />
                 </Button>
+
                 <View
                     style={[
                         styles.searchParent,
-                        { backgroundColor: contrast, }
                     ]}
                 >
-                    <TextInput
-                        style={[
-                            styles.searchBox,
-                            {
-                                color: currentColor,
-                            }
-                        ]}
-                        selectionColor={themeColor}
-                        returnKeyType="search"
-                    />
                     <Button
-                        style={styles.searchButton}
-                        onPress={() => console.log("Hii")}
-                        underlayColor={"transparent"}
+                        style={{
+                            // backgroundColor: "#666",
+                            flexDirection: "row",
+                            justifyContent: "flex-end",
+                            backgroundColor: contrast,
+                        }}
+                        onPress={() => { navigation.navigate("Search") }}
+                        underlayColor={contrast}
+                        activeOpacity={0.6}
                     >
-                        <FontelloIcon name="search" size={16} color={currentColor} />
+                        <View
+                            style={styles.searchButton}
+                        >
+                            <FontelloIcon name="search" size={16} color={currentColor} />
+                        </View>
                     </Button>
                 </View>
             </ViewGradient>
-        </HeaderLayout >
+        </HeaderLayout>
     );
 }
 

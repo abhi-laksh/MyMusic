@@ -14,23 +14,21 @@ const styles = StyleSheet.create({
     },
 })
 
-const MyAppText = (props) => {
-    const {
-        fontName = "montserrat",
-        variant = "medium",
-        size = 16,
-        style,
-        children,
-        color,
-        theme,
-        currentTheme,
-        parentStyle,
-        ...others
-    } = props;
+const MyAppText = ({
+    fontName = "montserrat",
+    variant = "medium",
+    size = 16,
+    style,
+    children,
+    color,
+    theme,
+    currentTheme,
+    parentStyle,
+    ...others
+}) => {
     const getFontStyles = theme.getFontSettings(fontName, variant, size);
     // const mergeStyle = [getFontStyles, styles.parent, { color: currentTheme.text.primary, }, { ...style }];
     return (
-
         <View
             style={[
                 styles.parent,

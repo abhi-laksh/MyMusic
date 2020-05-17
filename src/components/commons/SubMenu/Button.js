@@ -10,7 +10,7 @@ function Button(props) {
     return (
         <TouchableHighlight
             style={[
-                { overflow: "hidden" },
+                { overflow: "hidden", opacity: disabled ? 0.7 : 1 },
                 style
             ]}
             disabled={disabled}

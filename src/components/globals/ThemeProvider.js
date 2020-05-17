@@ -8,7 +8,7 @@ export const theme = {
             light: "Montserrat-Light",
             regular: "Montserrat-Regular",
             italic: "Montserrat-Italic",
-            black: "Montserrat-Black",
+            black: "Montserrat-Black", 
             extraBold: "Montserrat-ExtraBold",
             bold: "Montserrat-Bold",
             medium: "Montserrat-Medium",

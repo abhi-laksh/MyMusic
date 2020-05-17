@@ -2,6 +2,7 @@ import React from "react";
 import { View, StyleSheet, Animated } from "react-native";
 import FontelloIcon from "../FontelloIcon";
 import Button from "../Button";
+// import Button from "../SubMenu/Button";
 import { withTheme } from "../../globals/ThemeProvider";
 import ViewGradient from "../ViewGradient";
 import SharpBG from "../SharpBG";
@@ -19,7 +20,7 @@ const styles = StyleSheet.create({
         top: -30,
         left: "50%",
         marginLeft: -40,
-        zIndex: 1
+        zIndex: 3,
     },
     popTogglerGradient: {
         width: "100%",
@@ -36,7 +37,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         overflow: "hidden",
-        // zIndex: 1,
+        zIndex: 3,
     },
     popToggler: {
         width: 120,
@@ -50,11 +51,13 @@ const styles = StyleSheet.create({
         borderRadius: 24,
         overflow: "hidden",
         padding: 1,
+        zIndex:1,
     },
     popChildButtonsView: {
         padding: 0,
         borderRadius: 24,
-        overflow: "hidden"
+        overflow: "hidden",
+        zIndex:1,
     },
     popButtonSharpBG: {
         borderRadius: 64,
@@ -64,13 +67,11 @@ const styles = StyleSheet.create({
         height: "100%",
         justifyContent: "center",
         alignItems: "center",
-    },
-    popButtonSharpBG: {
-        borderRadius: 64,
+        zIndex:1,
     },
 })
 
-class PopsOut extends React.Component {
+class PopsOut extends React.PureComponent {
     constructor(props) {
         super(props);
         this.mode = new Animated.Value(0);
@@ -113,12 +114,34 @@ class PopsOut extends React.Component {
             inputRange: [0, 1],
             outputRange: [0.1, 1]
         });
-
+ 
         return (
             <View
                 style={styles.mostParent}
             >
-
+                <ViewGradient
+                    gradientStyle={styles.popTogglerGradient}
+                    viewStyle={styles.popTogglerView}
+                    onlyBorder
+                    top
+                    left
+                    right
+                    borderWidth={1}
+                >
+                    <Button
+                        onPress={this.handlePopsOut.bind(this)}
+                        style={styles.popToggler}
+                    >
+                        <Animated.View
+                            style={{
+                                transform: [{ rotate: rotate }]
+                            }}
+                        >
+                            <FontelloIcon name="up" size={12} color={iconColor} />
+                        </Animated.View>
+                    </Button>
+                </ViewGradient>
+                
                 <Animated.View
                     style={{
                         position: "absolute",
@@ -126,7 +149,7 @@ class PopsOut extends React.Component {
                         left: playlistX,
                         transform: [{ scale: scale }],
                     }}
-
+ 
                 >
                     <ViewGradient
                         gradientStyle={[
@@ -135,7 +158,7 @@ class PopsOut extends React.Component {
                         viewStyle={styles.popChildButtonsView}
                         onlyBorder
                     >
-                        <SharpBG style={styles.popButtonSharpBG} />
+                        {/* <SharpBG style={styles.popButtonSharpBG} /> */}
                         <Button
                             onPress={() => console.log("Button playlist")}
                             style={styles.popButton}
@@ -155,20 +178,20 @@ class PopsOut extends React.Component {
                     <ViewGradient
                         gradientStyle={styles.popChildButtonsGradient}
                         viewStyle={styles.popChildButtonsView}
-                        onlyBorder={!isFav}
+                        onlyBorder
                     >
-                        <SharpBG style={[
+                        {/* <SharpBG style={[
                             styles.popButtonSharpBG,
                             // { opacity: 0.7 }
                         ]}
                         // colors={[theme.pallete.primary.main, theme.pallete.secondary.light]}
-                        />
+                        /> */}
                         <Button
                             onPress={() => this.props.dispatch(toggleFavourites(this.props.currentTrack))}
                             // onPress={() => console.log("Button heart")}
                             style={styles.popButton}
                         >
-                            <FontelloIcon name="heart" size={18} color={isFav ? themeColor : iconColor} />
+                            <FontelloIcon name={isFav ? "heart-cross":"heart"} size={18} color={isFav ? themeColor : iconColor} />
                         </Button>
                     </ViewGradient>
                 </Animated.View>
@@ -186,38 +209,16 @@ class PopsOut extends React.Component {
                         viewStyle={styles.popChildButtonsView}
                         onlyBorder
                     >
-                        <SharpBG style={styles.popButtonSharpBG} />
+                        {/* <SharpBG style={styles.popButtonSharpBG} /> */}
                         <Button
                             onPress={() => console.log("Button close")}
                             style={styles.popButton}
                         >
-                            <FontelloIcon name="add-playlist" size={18} color={iconColor} />
+                            <FontelloIcon name="playlist-plus" size={24} color={iconColor} />
                         </Button>
                     </ViewGradient>
                 </Animated.View>
 
-                <ViewGradient
-                    gradientStyle={styles.popTogglerGradient}
-                    viewStyle={styles.popTogglerView}
-                    onlyBorder
-                    top
-                    left
-                    right
-                    borderWidth={1}
-                >
-                    <Button
-                        onPress={this.handlePopsOut.bind(this)}
-                        style={styles.popToggler}
-                    >
-                        <Animated.View
-                            style={{
-                                transform: [{ rotate: rotate }]
-                            }}
-                        >
-                            <FontelloIcon name="arrow-up" size={12} color={iconColor} />
-                        </Animated.View>
-                    </Button>
-                </ViewGradient>
             </View>
         );
     }

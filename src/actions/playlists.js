@@ -25,48 +25,78 @@ export function updatePlaylists(playlists) {
 
 
 function findPlaylist(playlists, PLName) {
-    const PLIndex = playlists.findIndex((each) => each.name === PLName);
+    let PLIndex = -1;
     let PLObject;
+    let count = 0;
+
+    for (var i = 0; i < playlists.length; i++) {
+        let each = playlists[i];
+        if ((count >= 2)) {
+            break
+        }
+        if ((each.name === PLName)) {
+            PLIndex = i;
+            PLObject = each;
+            count++;
+        }
+    }
     if (PLIndex > -1) {
-        PLObject = playlists[PLIndex];
-        return { index: PLIndex, playlist: PLObject };
+        return { index: PLIndex, playlist: PLObject, count: count }
     } else {
-        return { index: -1, playlists: null }
+        return { index: -1, playlist: null, count: 0 }
     }
 }
 
-export function addNewPlaylist(name, tracks) {
+export function addNewPlaylist(name, tracks = []) {
     return async (dispatch, getState) => {
-        const state = getState();
-        const [...playlists] = state.playlists.playlists;
 
-        dispatch(playlistStatus(true));
+        const state = getState();
+
+        const playlists = state.playlists.playlists.concat();
+
+        const date = (new Date()
+            .toJSON()
+            .replace(/[\-TZ]/g, "-")
+            .split("-")
+            .slice(0, 3)
+            .reverse()
+            .join("-"));
+
+        // dispatch(playlistStatus(true));
 
         if (playlists.length > 0) {
-            const { index } = findPlaylist(playlists, name);
-            if (index < 0) {
-                playlists.push({ name: name, tracks: tracks });
+
+            const { index, count } = findPlaylist(playlists, name);
+
+            if ((index < 0) && (count <= 0)) {
+                playlists.push({ name: name, tracks: tracks, date: date });
                 dispatch(updatePlaylists(playlists));
             }
+
         } else {
-            dispatch(updatePlaylists([{ name: name, tracks: tracks }]));
+            dispatch(updatePlaylists([{ name: name, tracks: tracks, date: date }]));
         }
+
     }
 }
 
 export function deletePlaylist(name) {
     return async (dispatch, getState) => {
         const state = getState();
-        const [...playlists] = state.playlists.playlists;
+        const playlists = state.playlists.playlists.concat();
 
         dispatch(playlistStatus(true));
 
-        if (playlists) {
+        if (playlists.length > 0) {
             const { index } = findPlaylist(playlists, name);
-            if (index >= 0) {
+            if (index > -1) {
+
                 _.remove(playlists, function (each) {
                     return each.name === name;
                 });
+
+                // playlists.splice(index, 1);
+
                 dispatch(updatePlaylists(playlists));
             }
         }
@@ -74,17 +104,20 @@ export function deletePlaylist(name) {
 }
 
 export function modifyPlaylist(name, newName) {
-    return async (dispatch, getState) => {
+    return (dispatch, getState) => {
         const state = getState();
-        const [...playlists] = state.playlists.playlists;
+        const playlists = state.playlists.playlists.concat();
 
         dispatch(playlistStatus(true));
 
-        if (playlists) {
+        if (playlists.length > 0) {
             const { index, playlist } = findPlaylist(playlists, name);
-            playlist.name = newName;
-            playlists[index] = playlist;
-            dispatch(updatePlaylists(playlists));
+            const indexNew = findPlaylist(playlists, newName).index;
+            if ((index > -1) && (indexNew < 0)) {
+                playlist.name = newName;
+                playlists[index] = playlist;
+                dispatch(updatePlaylists(playlists));
+            }
         }
     }
 }
@@ -92,15 +125,17 @@ export function modifyPlaylist(name, newName) {
 export function addTracksToPlaylist(name, tracks) {
     return async (dispatch, getState) => {
         const state = getState();
-        const [...playlists] = state.playlists.playlists;
+        const playlists = state.playlists.playlists.concat();
 
-        dispatch(playlistStatus(true));
+        // dispatch(playlistStatus(true));
 
-        if (playlists) {
+        if (playlists.length > 0) {
             const { index, playlist } = findPlaylist(playlists, name);
-            const updatedTracks = _.uniqBy(playlist.tracks.concat(tracks), 'id');
-            playlists[index] = { name: name, tracks: updatedTracks };
-            dispatch(updatePlaylists(playlists));
+            if (index > -1) {
+                const updatedTracks = _.uniqBy(playlist.tracks.concat(tracks), 'id');
+                playlists[index] = { name: name, tracks: updatedTracks, date: playlist.date };
+                dispatch(updatePlaylists(playlists));
+            }
         }
     }
 }
@@ -108,7 +143,7 @@ export function addTracksToPlaylist(name, tracks) {
 export function removeTracksFromPlaylist(name, trackId) {
     return async (dispatch, getState) => {
         const state = getState();
-        const [...playlists] = state.playlists.playlists;
+        const playlists = state.playlists.playlists.concat();
 
         dispatch(playlistStatus(true));
 

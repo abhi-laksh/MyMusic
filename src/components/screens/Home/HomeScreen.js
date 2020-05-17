@@ -1,70 +1,87 @@
 import React from "react";
-import { View, FlatList } from "react-native";
-import SongRow from "../../commons/SongRow";
+import { View } from "react-native";
+import { connect } from "react-redux";
+import TrackPlayer from 'react-native-track-player';
+
 import MiniPlayer from "../../commons/MiniPlayer/MiniPlayer";
 import ThemeToggler from "../../commons/ThemeToggler";
 import { withTheme } from "../../globals/ThemeProvider";
-import TrackPlayer from 'react-native-track-player';
-import { connect } from "react-redux";
 import Loading from "../../commons/Loading";
+import SongList from "../../commons/SongRow/SongList";
+import { addMultipleToQueue, addToQueue } from "../../../actions/queue";
+import CommonBG from "../../CommonBG";
 
 
 class HomeScreen extends React.Component {
     constructor(props) {
         super(props);
+        this.playRandomTrack = this.playRandomTrack.bind(this);
     }
-
-    async _handleSongPress(id) {
-        await TrackPlayer.skip(String(id));
-        TrackPlayer.play();
+    async playRandomTrack() {
+        const randomTrack = this.props.tracks[Math.floor(Math.random() * this.props.tracks.length)];
+        if (!(this.props.queue.find((e) => randomTrack.id === e.id))) {
+            console.log("HOME:::",randomTrack)
+            await this.props.addToQueue(randomTrack);
+            await TrackPlayer.skip(String(randomTrack.id));
+            TrackPlayer.play();
+        } else {
+            await TrackPlayer.skip(String(randomTrack.id));
+         }
     }
-
-    _renderItem({ item }) {
-        return (
-            <SongRow
-                key={item.id}
-                songName={item.title}
-                songAuthor={item.artist}
-                id={item.id}
-                track={item}
-            // onPress={() => this._handleSongPress.bind(this, item.id)}
-            />
-        )
-    }
-
     render() {
-        const { theme, currentTheme, navigation } = this.props;
+        const { currentTheme, navigation } = this.props;
 
+        const isLast = ((this.props.queue && this.props.currentTrack)
+            && (this.props.queue.findIndex((e) => e.id === this.props.currentTrack.id)) === (this.props.queue.length - 1)
+        )
         return (
             <View style={{
                 flex: 1,
                 backgroundColor: currentTheme.background,
             }}>
-                {this.props.fetching ?
-                    <Loading />
-                    : <FlatList
-                        contentContainerStyle={{
-                            padding: 16,
-                        }}
-                        data={this.props.tracks}
-                        renderItem={this._renderItem}
-                        // keyExtractor={item => item.id}
-                        updateCellsBatchingPeriod={100}
-                        refreshing
-                    />
-                }
-                <ThemeToggler />
-                <MiniPlayer navigation={navigation} />
+                <CommonBG>
+                    {this.props.fetching ?
+                        <Loading />
+                        :
+                        <SongList
+                            tracks={this.props.tracks}
+                            currentTrack={this.props.currentTrack}
+                            addAllToQueue={this.props.addAllToQueue}
+                        />
+                    }
+                </CommonBG> 
+
+                <MiniPlayer
+                    navigation={navigation}
+                    isPlaying={(this.props.state === TrackPlayer.STATE_PLAYING)}
+                    track={this.props.currentTrack}
+                    isLast={isLast}
+                    controls={this.props.controls}
+                    firstTrack={this.props.queue[0]}
+                    playRandomTrack={this.playRandomTrack}
+                />
             </View>
         );
     }
-}
+} 
 
 function mapStateToProps(state) {
     return {
+        currentTrack: state.player.currentTrack,
         tracks: state.library.tracks,
+        queue: state.queue.queue,
+        controls: state.controls,
+        state: state.player.state,
         fetching: state.library.fetching,
-        error: state.library.error
+        error: state.library.error,
     };
 }
-export default connect(mapStateToProps)(withTheme(HomeScreen));
+
+function mapDispatchToProps(dispatch) {
+    return {
+        addAllToQueue: (tracks) => dispatch(addMultipleToQueue(tracks)),
+        addToQueue: (track) => dispatch(addToQueue(track)),
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withTheme(HomeScreen));

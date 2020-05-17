@@ -37,9 +37,9 @@ export function addTracksToFavourites(tracks) {
 }
 
 export function removeTracksFromFavourites(trackId) {
-    return (dispatch, getState) => {
+    return async (dispatch, getState) => {
 
-        const state = getState();
+        const { ...state } = getState();
 
         const favourites = state.favourites.favourites.concat();
 
@@ -59,30 +59,34 @@ export function removeTracksFromFavourites(trackId) {
 export function toggleFavourites(track) {
 
     return (dispatch, getState) => {
-        const state = getState();
+        const { ...state } = getState();
 
         const favourites = state.favourites.favourites.concat();
 
-        const trackInFav = JSON.stringify(favourites).includes(track.id);
+        const trackInFav = favourites.findIndex((e) => e.id === track.id);
+        // const trackInFav = JSON.stringify(favourites).includes(track.id);
 
-        if (trackInFav) {
+        if (trackInFav > -1) {
 
-            const updatedTracks = favourites.filter(function (each) {
-                return ![track.id].includes(each.id);
-            });
+            // const updatedTracks = favourites.filter(function (each) {
+            //     return ![track.id].includes(each.id);
+            // });
 
-            if (updatedTracks) {
-                dispatch(updateFavourites(updatedTracks));
-            }
+            favourites.splice(trackInFav, 1);
+
+
+            dispatch(updateFavourites(favourites));
 
             // dispatch(removeTracksFromFavourites([trackInFav.id]))
 
         } else {
 
-            const updatedTracks = favourites.concat(track);
+            favourites.push(track);
 
-            dispatch(updateFavourites(updatedTracks));
+            dispatch(updateFavourites(favourites));
+
             // dispatch(addTracksToFavourites(track));
         }
+        // console.log("updatedTracks::::::::", favourites, trackInFav);
     }
 }

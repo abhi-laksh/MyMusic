@@ -32,14 +32,14 @@ function CurrentSong(props) {
                     styles.row
                 ]}
             >
-                <Thumbnail
+                {/* <Thumbnail
                     size={60}
-                />
+                /> */}
                 <View
                     style={styles.textParent}
                 >
                     <MyAppText
-                        variant="medium"
+                        variant="semiBold"
                         size={15}
                         numberOfLines={1}
                         ellipsizeMode={"tail"}
@@ -48,7 +48,7 @@ function CurrentSong(props) {
                     </MyAppText>
                     <MyAppText
                         fontName="bellota"
-                        size={13}
+                        size={12}
                         variant="bold"
                         numberOfLines={1}
                         ellipsizeMode={"tail"}

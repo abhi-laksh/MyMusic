@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
-import { withTheme } from "../globals/ThemeProvider";
+import React from "react";
+import { StyleSheet, Image, View } from "react-native";
 import { connect } from "react-redux";
 import ViewGradient from "./ViewGradient";
 import Modal from "react-native-modal";
+import CommonBG from "../CommonBG";
 const styles = StyleSheet.create({
     modal: {
         justifyContent: "flex-end",
@@ -12,17 +12,17 @@ const styles = StyleSheet.create({
     modalGradient: {
         borderTopRightRadius: 16,
         borderTopLeftRadius: 16,
+        // padding:0,
+        paddingBottom: 0,
+        overflow: "hidden"
     },
 })
 
 
-class MyModal extends React.Component {
+class MyModal extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state = { isOpen: false };
-        // this.makeVisible = this.makeVisible.bind(this);
-        // this.makeInVisible = this.makeInVisible.bind(this);
-        // this.props.setRef(this);
     }
 
     makeVisible() {
@@ -50,6 +50,7 @@ class MyModal extends React.Component {
             ...others } = this.props;
 
         return (
+
             <Modal
                 isVisible={this.state.isOpen}
                 style={[
@@ -81,7 +82,13 @@ class MyModal extends React.Component {
                     right
                     {...others}
                 >
-                    {children}
+                    <CommonBG
+                        style={{
+                            flex: 0,
+                        }}
+                    >
+                        {children}
+                    </CommonBG>
                 </ViewGradient>
             </Modal>
         )

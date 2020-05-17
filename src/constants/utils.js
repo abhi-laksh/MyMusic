@@ -12,7 +12,7 @@ import GetMusicDetails from '../components/commons/GetMusicDetails';
 
 
 var count = 0;
-// console.log("count--------------", count)
+// console.log("count--------------", count) 
 export async function loadTracks(pathOfDirToScan = RNFS.ExternalStorageDirectoryPath, data = { musicLocations: [], musicList: [] }) {
 
     const readedFilesAndDir = await RNFS.readDir(pathOfDirToScan);
@@ -29,10 +29,10 @@ export async function loadTracks(pathOfDirToScan = RNFS.ExternalStorageDirectory
             data = await loadTracks(directoryPath, data);
         } else {
 
-            const name = readedFilesAndDir[i].name;
+            let name = readedFilesAndDir[i].name.split(".");
 
-            const ext = name.split(".").pop();
-
+            const ext = name.pop();
+            name = name.join(" ").replace(/[\*\-_\(\)\[\]\{\}\&\,\ ]/g," ");
             if (extensions.includes(ext) && ((readedFilesAndDir[i].size) / 1048576) >= 2) {
 
                 const path = readedFilesAndDir[i].path
@@ -48,7 +48,7 @@ export async function loadTracks(pathOfDirToScan = RNFS.ExternalStorageDirectory
                 count += 1;
                 const fileDetails = {
                     id: String(path),
-                    title: title,
+                    title: name,
                     url: String(`file://${path}`),
                     size: readedFilesAndDir[i].size,
                     mtime: readedFilesAndDir[i].mtime,

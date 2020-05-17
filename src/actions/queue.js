@@ -9,6 +9,9 @@ export const QUEUE_STATUS = 'QUEUE_STATUS';
 export const ADD_SONG_TO_QUEUE = 'ADD_SONG_TO_QUEUE';
 export const REMOVE_SONG_FROM_QUEUE = 'REMOVE_SONG_FROM_QUEUE';
 
+
+// Checking queue is synced.
+
 export function queueStatus(syncing, error) {
     return {
         type: QUEUE_STATUS,
@@ -16,7 +19,7 @@ export function queueStatus(syncing, error) {
         error: error,
     }
 }
-
+// Update Queue in redux store
 export function updateQueue(tracks) {
     AsyncStorage.setItem("queue", JSON.stringify(tracks));
     return {
@@ -25,31 +28,45 @@ export function updateQueue(tracks) {
     }
 }
 
+// Add Song To Queue
 export function addToQueue(track) {
     return async (dispatch, getState) => {
         const { ...currentState } = getState();
 
-        let [...currentQueue] = currentState.queue.queue;
+        let currentQueue = currentState.queue.queue.concat();
 
-        // console.log("\naddToQueue", currentQueue);
-
-        if (!currentQueue.find((each) => each.id === track.id)) {
-
-            dispatch(queueStatus(true));
+        if (!(currentQueue.findIndex((each) => each.id === track.id) > -1)) {
 
             currentQueue.push(track);
-
-
-            dispatch(updateQueue(currentQueue));
-
             await TrackPlayer.add(track);
 
+            dispatch(updateQueue(currentQueue));
         };
-        // console.log("\naddToQueue After", currentQueue);
+    }
+}
+
+// Add Multiple Songs to Queue (e,g:- Play all in Favs, Playlists, etc)
+export function addMultipleToQueue(tracks, reset = true) {
+    return async (dispatch, getState) => {
+
+        const { ...currentState } = getState();
+
+        let currentQueue = currentState.queue.queue.concat();
+        if (reset) {
+            await TrackPlayer.reset();
+            currentQueue = [];
+        }
+        for (let i = 0; i < tracks.length; i++) {
+            if (!(JSON.stringify(currentQueue).includes(tracks[i].id))) {
+                await TrackPlayer.add(tracks[i]);
+            }
+        }
+        dispatch(updateQueue(tracks));
 
     }
 }
 
+// Remove Song to Queue
 export function removeFromQueue(trackId) {
     return async (dispatch, getState) => {
         // console.log("removeFromQueue ", await TrackPlayer.getQueue())
@@ -72,9 +89,9 @@ export function removeFromQueue(trackId) {
         } else {
 
             const [...currentQueue] = await TrackPlayer.getQueue();
-            
+
             // const lastTrackInQueue = currentQueue.find((e) => e.id === trackId);
-            
+
             const newQueue = currentQueue.filter((e) => e.id !== trackId);
 
             await TrackPlayer.skip(newQueue[(newQueue.length - 1)].id);

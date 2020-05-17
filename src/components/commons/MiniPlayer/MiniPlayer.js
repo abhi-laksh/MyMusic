@@ -11,7 +11,6 @@ import CurrentSong from "./CurrentSong";
 import ViewGradient from "../ViewGradient";
 import PopOuts from "./PopOuts";
 import { connect } from "react-redux";
-// import SongRow from "./SongRow";
 import TrackPlayer from 'react-native-track-player';
 import { updatePlayer } from "../../../actions/player";
 import AsyncStorage from "@react-native-community/async-storage";
@@ -21,7 +20,6 @@ import AsyncStorage from "@react-native-community/async-storage";
 const styles = StyleSheet.create({
     parentGradientStyle: {
         position: "relative",
-
     },
     parentViewStyle: {
         flexDirection: "row",
@@ -38,13 +36,97 @@ const styles = StyleSheet.create({
     controls: {
         height: "100%",
         // paddingHorizontal: 16,
-        width: 60,
+        width: 50,
         justifyContent: "center",
         alignItems: "center",
     },
 })
 
-class MiniPlayer extends React.Component {
+class MiniPlayer extends React.PureComponent {
+    constructor(props) {
+        super(props);
+        this._togglePlayPause = this._togglePlayPause.bind(this)
+        this._skipToNext = this._skipToNext.bind(this)
+    }
+
+    _togglePlayPause() {
+        // (this.props.state == TrackPlayer.STATE_PAUSED) || (this.props.state == TrackPlayer.STATE_STOPPED)
+        if (!this.props.isPlaying) {
+            TrackPlayer.play();
+        } else {
+            TrackPlayer.pause();
+        }
+    }
+    async _skipToNext() {
+        // (this.props.state == TrackPlayer.STATE_PAUSED) || (this.props.state == TrackPlayer.STATE_STOPPED)
+        if (this.props.controls && this.props.controls.isShuffle) {
+            await this.props.playRandomTrack();
+        }else{
+            if (!this.props.isLast) {
+                await TrackPlayer.skipToNext();
+            } else {
+                if (
+                    this.props.controls.isLoop
+                    && this.props.controls.loopType === "all"
+                    && this.props.firstTrack
+                ) {
+                    await TrackPlayer.skip(this.props.firstTrack.id);
+                }
+            }
+        }
+    }
+
+    render() {
+        const { theme, currentTheme, isPlaying, isLast, navigation } = this.props
+        // console.log("Miniplayer", this.props.controls);
+ 
+        return (
+            <ViewGradient
+                gradientStyle={styles.parentGradientStyle}
+                viewStyle={styles.parentViewStyle}
+                top
+                onlyBorder
+                borderWidth={1}
+            >
+                <PopOuts />
+                <View
+                    style={styles.currentSongParent}
+                >
+                    <CurrentSong
+                        onPress={() => navigation.navigate('Player')}
+                        songName={this.props.track ? this.props.track.title : "Unknown Title"}
+                        songAuthor={this.props.track ? this.props.track.artist : "Unknown Artist"}
+                    />
+                </View>
+
+                <View
+                    style={styles.controlsParent}
+                >
+                    <PlayPauseButton
+                        style={styles.controls}
+                        isPlaying={isPlaying}
+                        onPress={this._togglePlayPause}
+                        underlayColor={"transparent"}
+                    />
+
+                    <NextButton
+                        style={styles.controls}
+                        onPress={this._skipToNext}
+                        underlayColor={"transparent"}
+                        disabled={this.props.controls && (!this.props.controls.isLoop && isLast) && !(this.props.controls.isShuffle)}
+                    />
+                </View>
+            </ViewGradient>
+        );
+    }
+}
+
+export default MiniPlayer;
+
+/*
+
+
+class MiniPlayer extends React.PureComponent {
     constructor(props) {
         super(props);
         // this._togglePlayPause = this._togglePlayPause.bind(this)
@@ -106,7 +188,7 @@ class MiniPlayer extends React.Component {
                 <PopOuts />
             </ViewGradient>
         );
-    } 
+    }
 }
 
 function mapStateToProps(state) {
@@ -120,3 +202,5 @@ function mapStateToProps(state) {
     };
 }
 export default connect(mapStateToProps)(withTheme(MiniPlayer));
+
+*/

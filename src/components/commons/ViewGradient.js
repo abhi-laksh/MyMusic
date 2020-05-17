@@ -3,24 +3,23 @@ import { View } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient';
 import { withTheme } from '../globals/ThemeProvider';
 
-const ViewGradient = (props) => {
-    const { children,
-        gradientStyle,
-        disabled,
-        viewStyle,
-        locations,
-        currentTheme,
-        textStyle,
-        angle = 90,
-        theme,
-        gColors,
-        borderWidth = 2,
-        onlyBorder = false,
-        top = false,
-        left = false,
-        bottom = false,
-        right = false,
-        ...others } = props;
+const ViewGradient = ({ children,
+    gradientStyle,
+    disabled,
+    viewStyle,
+    locations,
+    currentTheme,
+    textStyle,
+    angle = 90,
+    theme,
+    gColors,
+    borderWidth = 2,
+    onlyBorder = false,
+    top = false,
+    left = false,
+    bottom = false,
+    right = false,
+    ...others }) => {
 
     const colors = (gColors ? gColors : theme ? ([theme.pallete.primary.main, theme.pallete.secondary.main]) : (["#aaa", "#000"]));
 

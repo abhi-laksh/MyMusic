@@ -2,9 +2,18 @@ import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import HomeScreen from '../screens/Home/HomeScreen';
 import HomeScreenHeader from '../screens/Home/Header';
-import PlayerScreen from '../screens/PlayerScreen/PlayerScreen';
-import PlayerScreenHeader from '../screens/PlayerScreen/Header';
-import { HomeStack, PlayerStack } from './StackNavigator';
+import PlayerScreen from '../screens/Player/PlayerScreen';
+import PlayerScreenHeader from '../screens/Player/Header';
+import {
+    HomeStack,
+    PlayerStack,
+    PlaylistStack,
+    FavouriteStack,
+    LyricsStack,
+    SettingStack,
+    SongInfoStack,
+    SearchStack
+} from './StackNavigator';
 import { withTheme } from '../globals/ThemeProvider';
 import MyDrawerContent from './MyDrawerContent';
 
@@ -28,14 +37,53 @@ function MyDrawer(props) {
                 component={HomeStack}
             />
             <Drawer.Screen
+                name="SongInfo"
+                component={SongInfoStack}
+                options={{
+                    // gestureEnabled: false,
+                }}
+            />
+            <Drawer.Screen
+                name="Lyrics"
+                component={LyricsStack}
+                options={{
+                    // gestureEnabled: false,
+                }}
+            />
+            <Drawer.Screen
+                name="Search"
+                component={SearchStack}
+                options={{
+                    gestureEnabled: false,
+                }}
+            />
+            <Drawer.Screen
+                name="Setting"
+                component={SettingStack}
+                options={{
+                    // gestureEnabled: false,
+                }}
+            />
+            <Drawer.Screen
+                name="Playlist"
+                component={PlaylistStack}
+                options={{
+                    gestureEnabled: false,
+                }}
+            />
+            <Drawer.Screen
+                name="Favourites"
+                component={FavouriteStack}
+                options={{
+                    gestureEnabled: false,
+                }}
+            />
+            <Drawer.Screen
                 name="Player"
                 component={PlayerStack}
                 options={{
-                    // gestureEnabled: false,
-
+                    gestureEnabled: false,
                 }}
-
-
             />
         </Drawer.Navigator>
     );

@@ -25,20 +25,19 @@ const styles = StyleSheet.create({
     },
 })
 
-function Input(props) {
-    const {
-        children,
-        disabled = false,
-        inputStyle,
-        viewStyle,
-        gradientStyle,
-        gradientProps,
-        theme,
-        currentTheme,
-        ...others
-    } = props;
-
-    const contrastValue = (currentTheme.name === "dark") ? 0.08 : -0.05;
+const Input = ({
+    children,
+    disabled = false,
+    readOnly = false,
+    inputStyle,
+    viewStyle,
+    gradientStyle,
+    gradientProps,
+    theme,
+    currentTheme,
+    ...others
+}) => {
+    const contrastValue = (currentTheme.name === "dark") ? 0.5 : -0.5;
 
     const contrast = theme.lightenDarken(contrastValue, theme.hexToRGB(currentTheme.background));
     const themeColor = currentTheme.name === "dark" ? theme.pallete.primary.main : theme.pallete.primary.light
@@ -49,10 +48,9 @@ function Input(props) {
                 styles.gradientStyle,
                 gradientStyle
             ]}
-            viewStyle={[
-                styles.viewStyle,
-                viewStyle
-            ]}
+            viewStyle={
+                StyleSheet.compose(styles.viewStyle, viewStyle)
+            }
             onlyBorder
             borderWidth={1}
             disabled={disabled}
@@ -66,15 +64,13 @@ function Input(props) {
                 ]}
                 selectionColor={themeColor}
                 // disabled={disabled}
-                editable={!disabled}
+                editable={(!disabled && !readOnly)}
                 maxLength={255}
-                placeholderTextColor={color}
-
+                placeholderTextColor={contrast}
                 {...others}
             />
-            {disabled && <Icon name="cancel" style={{ paddingHorizontal: 8 }} size={24} color={theme.pallete.error.main} />}
+            {(disabled) && (!readOnly) && <Icon name="cancel" style={{ paddingHorizontal: 8 }} size={24} color={theme.pallete.error.main} />}
         </ViewGradient>
     )
-
 }
 export default withTheme(Input);

@@ -16,20 +16,16 @@ const styles = StyleSheet.create({
 })
 
 
-const GradientText = (props) => {
-    const {
-        children,
-        maskedStyle,
-        gradientStyle,
-        gradientViewStyle,
-        theme,
-        currentTheme,
-        angle = 90,
-        locations,
-        gColors,
-        maskElement,
-        ...others
-    } = props;
+const GradientText = ({
+    children,
+    maskedStyle,
+    gradientStyle,
+    gradientViewStyle,
+    angle = 90,
+    locations,
+    gColors,
+    ...others
+}) => {
     // console.log(`GradientText`, children)
     return (
         <MaskedView
@@ -48,7 +44,6 @@ const GradientText = (props) => {
                 angle={angle}
                 locations={locations}
                 gColors={gColors}
-                viewStyle={{}}
                 viewStyle={[
                     gradientViewStyle,
                 ]}
@@ -58,7 +53,7 @@ const GradientText = (props) => {
     )
 }
 
-export default withTheme(GradientText);
+export default GradientText;
 /*
 
 const GradientText = (props) => {

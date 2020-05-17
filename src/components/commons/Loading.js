@@ -8,9 +8,7 @@ import * as Animatable from 'react-native-animatable';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 
-function Loading(props) {
-    const { currentTheme, theme } = props;
-
+function Loading({ currentTheme, theme } ) {
     const hieght_0 = {
         0: {
             opacity: 1,
@@ -58,7 +56,7 @@ function Loading(props) {
                     style={{
                         marginTop: 16,
                         fontFamily: theme.font.montserrat.bold,
-                        fontSize: 24,
+                        fontSize: 24, 
                         color: currentTheme.text.primary,
                         textAlign: "center",
                     }}
