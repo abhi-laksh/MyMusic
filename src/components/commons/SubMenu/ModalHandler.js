@@ -88,22 +88,20 @@ class ModalHandler extends React.PureComponent {
     }
 
     _handleOnPressQueue = () => {
-        // const { queue } = props.queue;
         this.mainModal.makeInVisible();
 
-        const isInQueue = JSON.stringify(this.props.queue).includes(this.props.track.id);
+        const isInQueue = this.props.track && this.props.queue && this.props.queue.includes(this.props.track.id);
 
         if (isInQueue) {
-            this.props.dispatch(removeFromQueue(this.props.track.id));
+            this.props.removeFromQueue((this.props.track.id));
         } else {
-            this.props.dispatch(addToQueue(this.props.track));
+            this.props.addToQueue((this.props.track.id));
         }
-
-        // console.log(JSON.stringify(this.props.queue));
     }
 
     _toggleFav() {
-        this.props.dispatch(toggleFavourites(this.props.track));
+        let id = this.props.track && this.props.track.id;
+        this.props.toggleFavourites((id));
         this.mainModal.makeInVisible();
     }
 
@@ -151,8 +149,12 @@ class ModalHandler extends React.PureComponent {
 
         const color = currentTheme.text.primary;
         const bgContrast = theme.hexToRGB(color, 0.4);
-        const isInQueue = track && (JSON.stringify(this.props.queue).includes(track.id));
-        const isFavourite = track && (JSON.stringify(this.props.favourites).includes(track.id));
+
+        const isInQueue = track && this.props.queue && this.props.queue.includes(track.id);
+        const isFavourite = track && this.props.favourites && this.props.favourites.includes(track.id);
+        /* 
+            TODO : bug solve in add/remove queue,
+        */
         return (
             <View
                 ref={this.setThisRef}
@@ -188,7 +190,7 @@ class ModalHandler extends React.PureComponent {
                         </View>
                     </Button>
 
-                    {(this.props.playlists.length > 0) && (
+                    {(this.props.playlists && this.props.playlists.allIds && this.props.playlists.allIds.length > 0) && (
                         <Button
                             onPress={this.setActiveModal.bind(this, "existingPlaylistModal")}
                             style={styles.modalButtons}
@@ -302,7 +304,7 @@ class ModalHandler extends React.PureComponent {
                 <NewPlaylistModal
                     setRef={(ref) => { this.newPlaylistModal = ref }}
                     onCancel={() => this.newPlaylistModal.makeInVisible()}
-                    track={track}
+                    trackId={track && track.id}
                 />
 
                 <ExistingPlaylistModal
@@ -318,20 +320,23 @@ class ModalHandler extends React.PureComponent {
 }
 
 function mapStateToProps(state) {
-    const favourites = state.favourites.favourites;
-    const queue = state.queue.queue;
-
-    const currentTrack = state.player.currentTrack;
-
-    // const isFav = (currentTrack && currentTrack.id && JSON.stringify(favourites).includes(currentTrack.id))
-    // const isInQueue = (currentTrack && currentTrack.id && JSON.stringify(queue).includes(currentTrack.id))
-
-    const playlists = state.playlists.playlists;
-
-    return { currentTrack: currentTrack, favourites: favourites, queue: queue, playlists: playlists };
+    let { library, playlists } = state;
+    return {
+        favourites: library && library.favourites,
+        queue: library && library.queue,
+        playlists: playlists
+    };
 }
 
-export default connect(mapStateToProps)(withTheme(ModalHandler));
+function mapDispatchToProps(dispatch) {
+    return {
+        addToQueue: (trackId) => dispatch(addToQueue(trackId)),
+        removeFromQueue: (trackId) => dispatch(removeFromQueue(trackId)),
+    }
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(withTheme(ModalHandler));
 
 
 /*

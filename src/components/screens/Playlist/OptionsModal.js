@@ -8,7 +8,7 @@ import MyAppText from "../../commons/MyAppText";
 import FontelloIcon from "../../commons/FontelloIcon";
 import Button from "../../commons/SubMenu/Button";
 import MyModal from "../../commons/MyModal";
-import { deletePlaylist } from "../../../actions/playlists";
+import { removePlaylist } from "../../../actions/playlists";
 
 const styles = StyleSheet.create({
     buttons: {
@@ -33,14 +33,12 @@ const styles = StyleSheet.create({
     },
     modalButtons: {
         marginBottom: 16,
-        paddingVertical: 8
+        paddingVertical: 12
     },
     modalTitleParent: {
         marginBottom: 16,
     },
     modalTitle: {
-        borderBottomWidth: 1,
-        paddingBottom: 8,
     },
 })
 
@@ -55,22 +53,14 @@ class OptionsModal extends React.Component {
 
         this.props.onCancel();
         this.props.navigation.navigate('PlaylistEditScreen', {
-            name: this.props.PLName,
-            tracks: this.props.PLTracks,
+            playlistId: this.props.playlistId
         });
 
     }
 
     _deletePL() {
-        this.props.deletePlaylist(this.props.PLName);
-        this.props.navigation.reset({
-            index: 0,
-            routes: [
-                {
-                    name: 'PlaylistScreen'
-                },
-            ]
-        });
+        this.props.removePlaylist(this.props.playlistId);
+        this.props.navigation.navigate('PlaylistScreen');
     }
 
     render() {
@@ -85,15 +75,16 @@ class OptionsModal extends React.Component {
         return (
             <MyModal
                 setRef={this.props.setModal}
+                isSetBG={false}
             >
                 <MyAppText
                     numberOfLines={1}
                     parentStyle={styles.modalTitleParent}
-                    style={[
-                        styles.modalTitle,
-                        { borderBottomColor: contrast }
-                    ]}
-
+                    style={{
+                        borderBottomWidth: 1,
+                        paddingBottom: 12,
+                        borderBottomColor: contrast
+                    }}
                 >
                     {`Playlist Settings ${PLName ? ':- ' + PLName : ""}`}
                 </MyAppText>
@@ -101,7 +92,7 @@ class OptionsModal extends React.Component {
                     onPress={this._navigateToEditScreen}
                     style={[
                         styles.modalButtons,
-                        { marginBottom: 0 }
+                        // { marginBottom: 0 }
                     ]}
                 >
                     <View style={styles.buttonView}>
@@ -121,7 +112,7 @@ class OptionsModal extends React.Component {
                     onPress={this._deletePL}
                     style={[
                         styles.modalButtons,
-                        { marginBottom: 0 }
+                        // { marginBottom: 0 }
                     ]}
                 >
                     <View style={styles.buttonView}>
@@ -141,7 +132,7 @@ class OptionsModal extends React.Component {
 }
 function mapDispatchToProps(dispatch) {
     return {
-        deletePlaylist: (name) => dispatch(deletePlaylist(name))
+        removePlaylist: (name) => dispatch(removePlaylist(name))
     }
 }
 export default connect(null, mapDispatchToProps)(withTheme(OptionsModal));

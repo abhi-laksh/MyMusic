@@ -26,6 +26,7 @@ class MyModal extends React.PureComponent {
     }
 
     makeVisible() {
+        let isOpen = this.state.isOpen;
         this.setState(() => ({ isOpen: true }));
     }
 
@@ -47,6 +48,8 @@ class MyModal extends React.PureComponent {
             viewStyle,
             isOpen,
             setRef,
+            bgStyle,
+            isSetBG = true,
             ...others } = this.props;
 
         return (
@@ -82,19 +85,42 @@ class MyModal extends React.PureComponent {
                     right
                     {...others}
                 >
-                    <CommonBG
-                        style={{
-                            flex: 0,
-                        }}
-                    >
-                        {children}
-                    </CommonBG>
+                    {/* {
+                        isSetBG
+                            ? (
+                                <CommonBG
+                                    style={[
+                                        {
+                                            flex: 0,
+                                        },
+                                        bgStyle
+                                    ]}
+                                >
+                                    {children}
+                                </CommonBG>
+                            ) : children
+                    } */}
+                    {children}
                 </ViewGradient>
             </Modal>
         )
     }
 }
+/* 
 
+                    {
+                        isSetBG
+                            ? (
+                                <CommonBG
+                                    style={{
+                                        flex: 0,
+                                    }}
+                                >
+                                    {children}
+                                </CommonBG>
+                            ) : children
+                    }
+*/
 
 function mapStateToProps(state) {
     const currentTrack = state.player.currentTrack;

@@ -35,19 +35,16 @@ class SubMenu extends React.Component {
     render() {
         const {
             songName = "Unknown Name",
-            songAuthor = "Unknown Author",
-            songImage,
             id,
             currentTheme,
             track,
-            onPress
         } = this.props;
         const color = currentTheme.text.primary; 
         return (
             <View>
                 <ModalHandler
                     setRef={this._setMainModalRef}
-                    track={track}
+                    track={track} 
                     id={id}
                     songName={songName}
                 />

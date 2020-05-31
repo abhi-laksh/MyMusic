@@ -147,7 +147,6 @@ function MyDrawerContent(props) {
                     {routes.map(function (e) {
                         return (
                             <DrawerItem
-                                {...props}
                                 label={e.name}
                                 key={e.key}
                                 labelStyle={[

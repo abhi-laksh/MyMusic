@@ -42,17 +42,19 @@ class ExistingPlaylistModal extends React.PureComponent {
         this._renderPlaylistRows = this._renderPlaylistRows.bind(this);
     }
 
-    _addToPlaylist(name) {
+    _addToPlaylist(playlistId) {
+        let trackId = this.props.track && this.props.track.id;
         this.props.onCancel();
-        this.props.addTracksToPlaylist(name, this.props.track);
+        this.props.addTracksToPlaylist(playlistId, trackId);
     }
 
     _renderPlaylistRows(each, index) {
         const color = this.props.currentTheme.text.primary;
+        const eachPL = this.props.playlists.byId[each]
         return (
             <Button
-                key={each.name || index}
-                onPress={() => this._addToPlaylist(each.name)}
+                key={each}
+                onPress={() => this._addToPlaylist(each)}
                 style={styles.modalButtons}
             >
                 <View style={styles.buttonView}>
@@ -63,7 +65,7 @@ class ExistingPlaylistModal extends React.PureComponent {
 
                         numberOfLines={1}
                     >
-                        {each.name}
+                        {eachPL && eachPL.name}
                     </MyAppText>
                 </View>
             </Button>
@@ -89,8 +91,8 @@ class ExistingPlaylistModal extends React.PureComponent {
                 </MyAppText>
 
                 {
-                    (playlists) && (playlists.length > -1)
-                        ? playlists.map(this._renderPlaylistRows)
+                    (playlists) && playlists.allIds && (playlists.allIds.length > -1)
+                        ? playlists.allIds.map(this._renderPlaylistRows)
                         : null
                 }
             </MyModal>

@@ -1,5 +1,6 @@
 import TrackPlayer from 'react-native-track-player';
 import { playerState, playerTrack } from '../actions/player';
+import { addToQueue } from '../actions/queue';
 
 async function eventHandler(store, data) {
 	// Event Listening , e.g play;
@@ -13,51 +14,46 @@ async function eventHandler(store, data) {
 		TrackPlayer.pause();
 	});
 
-	TrackPlayer.addEventListener('remote-previous', () => {
-
+	TrackPlayer.addEventListener('remote-previous', async () => {
 		const state = store.getState();
-		const { queue, player, controls } = state;
-		const stateReady = (queue.queue && player.currentTrack && controls);
-
-		const isFirst = ((stateReady)
-			&& (queue.queue.findIndex((e) => e.id === player.currentTrack.id)) === (0)
+		const { player, library } = state;
+		const isFirst = ((library && player)
+			&& library.queue
+			&& library.queue.indexOf(player.currentTrack) === 0
 		);
 
 		if (!isFirst) {
-			TrackPlayer.skipToPrevious();
+			await TrackPlayer.skipToPrevious();
 		} else {
 			if (
-				controls.isLoop
-				&& controls.loopType === "all"
-				&& queue.queue
+				library
+				&& library.queue
+				&& library.queue.length
 			) {
-				TrackPlayer.skip(queue.queue[queue.queue.length - 1].id);
+				await TrackPlayer.skip(library.queue[library.queue.length - 1]);
 			}
 		}
-		console.log('remote-previous');
 	});
 
-	TrackPlayer.addEventListener('remote-next', () => {
+	TrackPlayer.addEventListener('remote-next', async () => {
 		const state = store.getState();
-		const { queue, player, controls } = state;
-		const stateReady = (queue.queue && player.currentTrack && controls);
-
-		const isLast = ((stateReady)
-			&& (queue.queue.findIndex((e) => e.id === player.currentTrack.id)) === (queue.queue.length - 1)
+		const { player, library } = state;
+		const isLast = ((library && player)
+			&& library.queue
+			&& library.queue.indexOf(player.currentTrack) === (library.queue.length - 1)
 		);
 
 		if (!isLast) {
-			TrackPlayer.skipToNext();
+			await TrackPlayer.skipToNext();
 		} else {
 			if (
-				controls.isLoop
-				&& controls.loopType === "all"
-				&& queue.queue
+				library
+				&& library.queue
+				&& library.queue.length
 			) {
-				TrackPlayer.skip(queue.queue[0].id);
+				await TrackPlayer.skip(library.queue[0]);
 			}
 		}
-		console.log('remote-next');
 	});
 
 	TrackPlayer.addEventListener('remote-stop', () => {
@@ -65,24 +61,24 @@ async function eventHandler(store, data) {
 		TrackPlayer.stop();
 	});
 
-	TrackPlayer.addEventListener('remote-seek', data => {
+	TrackPlayer.addEventListener('remote-seek', async data => {
 		console.log('remote-seek');
-		TrackPlayer.seekTo(data.position);
+		await TrackPlayer.seekTo(data.position);
 	});
 
-	TrackPlayer.addEventListener('remote-jump-backward', data => {
+	TrackPlayer.addEventListener('remote-jump-backward', async data => {
 		console.log('remote-jump-backward');
-		TrackPlayer.seekTo(data.position - 10);
+		await TrackPlayer.seekTo(data.position - 10);
 	});
 
-	TrackPlayer.addEventListener('remote-jump-forward', data => {
+	TrackPlayer.addEventListener('remote-jump-forward', async data => {
 		console.log('remote-jump-forward');
-		TrackPlayer.seekTo(data.position + 10);
+		await TrackPlayer.seekTo(data.position + 10);
 	});
 
-	TrackPlayer.addEventListener('remote-duck', data => {
+	TrackPlayer.addEventListener('remote-duck', async data => {
 		console.log('remote-duck');
-		TrackPlayer.setVolume(data.ducking ? 0.5 : 1);
+		await TrackPlayer.setVolume(data.ducking ? 0.5 : 1);
 	});
 
 	// Player State
@@ -90,10 +86,9 @@ async function eventHandler(store, data) {
 		store.dispatch(playerState(data.state));
 	});
 
-	TrackPlayer.addEventListener('playback-track-changed', async data => {
-		let newTrack = await TrackPlayer.getTrack(data.nextTrack);
-		
-		store.dispatch(playerTrack(newTrack));
+	TrackPlayer.addEventListener('playback-track-changed', data => {
+		// let newTrack = await TrackPlayer.getTrack(data.nextTrack);
+		store.dispatch(playerTrack(data.nextTrack));
 	});
 
 	TrackPlayer.addEventListener('playback-error', data => {
@@ -101,16 +96,47 @@ async function eventHandler(store, data) {
 		console.log(msg);
 	});
 
-	TrackPlayer.addEventListener('playback-queue-ended', data => {
+	TrackPlayer.addEventListener('playback-queue-ended', async (data) => {
 		const state = store.getState();
-		const { controls, player, queue } = state;
+		const { player, library, tracks } = state;
 
-		if (controls.isLoop) {
-			if (controls.loopType === 'all' && queue.queue) {
-				TrackPlayer.skip(queue.queue[0].id);
-			} else {
-				if (player.currentTrack) {
-					TrackPlayer.skip(player.currentTrack.id);
+		if (player.controlType === "loop-one") {
+			await TrackPlayer.seekTo(0);
+		} else {
+			if (player.state === TrackPlayer.STATE_PLAYING) {
+				const queue = library && library.queue;
+				// console.log("ERRRRRRRRRRRRRRR", queue, player.init);
+				if (queue.length && (await TrackPlayer.getQueue()).length) {
+					if (player.controlType === "loop-all") {
+						// Play In Order
+						try {
+							await TrackPlayer.skip(queue[0]);
+						} catch (error) {
+							console.log("ERRRR IN LOOP::::::::::", error)
+						}
+					} else {
+						// Play In Shuffle
+						try {
+							let randomTrackId = this.props.queue
+								&& this.props.queue.length
+								&& this.props.queue[Math.floor(Math.random() * this.props.queue.length)];
+
+							if (randomTrackId
+								&& !JSON.stringify((await TrackPlayer.getQueue()))
+									.includes(randomTrackId)
+							) {
+								await store.dispatch(addToQueue(randomTrackId));
+
+								await TrackPlayer.skip(String(randomTrackId));
+
+							} else {
+								await TrackPlayer.skip(String(randomTrackId));
+							}
+
+						} catch (error) {
+							console.log("ERRRR IN Shuffle:::::::::: ", error)
+						}
+					}
 				}
 			}
 		}
@@ -120,7 +146,3 @@ async function eventHandler(store, data) {
 export default store => {
 	return eventHandler.bind(null, store);
 };
-
-// module.exports = function (store) {
-//     return eventHandler.bind(null, store);
-// };

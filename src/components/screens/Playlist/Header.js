@@ -35,8 +35,7 @@ function Header(props) {
 
     const { currentTheme, navigation, scene } = props;
 
-    const PLName = scene.route.params ? scene.route.params.name : null;
-    const PLTracks = scene.route.params ? scene.route.params.tracks : null;
+    const playlistId = scene.route.params ? scene.route.params.playlistId : null;
 
     const color = currentTheme.text.primary;
 
@@ -74,7 +73,7 @@ function Header(props) {
                         ? (
                             null
                         ) : (
-                            <Options navigation={navigation} PLName={PLName} PLTracks={PLTracks} />
+                            <Options navigation={navigation} playlistId={playlistId} />
                         )
                 }
 

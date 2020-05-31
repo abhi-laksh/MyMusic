@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
 
 
 class PlayerScreen extends React.Component {
-  constructor(props) {
+  constructor(props) { 
     super(props);
   }
   render() {
@@ -47,6 +47,6 @@ class PlayerScreen extends React.Component {
       </View>
     );
   }
-}
+} 
 
 export default withTheme(PlayerScreen);

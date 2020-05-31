@@ -44,9 +44,8 @@ const GradientText = ({
                 angle={angle}
                 locations={locations}
                 gColors={gColors}
-                viewStyle={[
-                    gradientViewStyle,
-                ]}
+                viewStyle={gradientViewStyle}
+                borderWidth={0}
 
             ></ViewGradient>
         </MaskedView>

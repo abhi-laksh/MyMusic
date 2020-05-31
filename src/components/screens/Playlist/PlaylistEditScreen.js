@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import MyAppText from "../../commons/MyAppText";
 import Button from "../../commons/SubMenu/Button";
 import Input from "../../commons/Input";
-import { modifyPlaylist } from "../../../actions/playlists";
+import { renamePlaylist } from "../../../actions/playlists";
 import ViewGradient from "../../commons/ViewGradient";
 import { withTheme } from "../../globals/ThemeProvider";
 
@@ -49,15 +49,13 @@ class PlaylistEditScreen extends React.Component {
     constructor(props) {
         super(props);
 
-        this.initialName = (this.props.route.params
-            ? (this.props.route.params.name || "")
-            : "")
-        this.PLTracks = (this.props.route.params
-            ? (this.props.route.params.tracks || [])
-            : [])
+        /* 
+        TODO : set error feature
+        */
 
         this.state = {
-            value: this.initialName
+            value: "",
+            error: null
         };
         this._handleInput = this._handleInput.bind(this);
         this._modifyPL = this._modifyPL.bind(this);
@@ -65,28 +63,27 @@ class PlaylistEditScreen extends React.Component {
 
     }
 
-
-
     _handleInput(val) {
-        console.log(val);
+        // console.log(val);
         this.setState(() => ({ value: val }))
     }
 
     _modifyPL() {
-        const name = this.initialName;
         const newName = this.state.value;
-        if (name !== newName) {
+        const { playlistId } = (this.props.route.params)
+        if (newName && newName.length && playlistId) {
 
-            this.props.modifyPlaylist(name, newName);
+            this.props.renamePlaylist(playlistId, newName);
+            this.props.navigation.navigate('PlaylistScreen');
 
-            this.props.navigation.reset({
-                index: 0,
-                routes: [
-                    {
-                        name: 'PlaylistScreen'
-                    },
-                ]
-            });
+            // this.props.navigation.reset({
+            //     index: 0,
+            //     routes: [
+            //         {
+            //             name: 'PlaylistScreen'
+            //         },
+            //     ]
+            // });
 
         } else {
             this.props.navigation.goBack();
@@ -95,6 +92,18 @@ class PlaylistEditScreen extends React.Component {
 
     _cancel() {
         this.props.navigation.goBack();
+    }
+
+    componentDidMount() {
+        if (this.props.playlists
+            && this.props.playlists.byId
+            && (this.props.route.params && this.props.route.params.playlistId)
+        ) {
+            const { name } = this.props.playlists.byId[this.props.route.params.playlistId]
+            this.setState(() => ({
+                value: name,
+            }));
+        }
     }
 
     render() {
@@ -167,11 +176,12 @@ class PlaylistEditScreen extends React.Component {
 function mapStateToProps(state) {
     return {
         currentTrack: state.player.currentTrack,
+        playlists: state.playlists,
     };
 }
 function mapDispatchToProps(dispatch) {
     return {
-        modifyPlaylist: (name, newName) => dispatch(modifyPlaylist(name, newName))
+        renamePlaylist: (playlistId, newName) => dispatch(renamePlaylist(playlistId, newName))
     }
 }
 

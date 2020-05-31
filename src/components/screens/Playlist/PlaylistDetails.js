@@ -94,18 +94,21 @@ class PlaylistDetails extends React.PureComponent {
 
     _addMoreSongs() {
         const { tracks } = this.props;
+
         this.props.addMultipleToQueue(tracks);
         TrackPlayer.play();
     }
 
     render() {
-        const { theme, currentTheme, navigation, name, tracks, createdOn } = this.props;
+        const { theme, currentTheme, navigation, playlistId, name, tracks, createdOn } = this.props;
 
         const contrastValue = (currentTheme.name === "dark") ? 0.3 : -0.3;
         const contrast = theme.lightenDarken(contrastValue, theme.hexToRGB(currentTheme.background));
         const currentColor = currentTheme.text.primary;
 
-        console.log(name, createdOn)
+        // console.log();
+        // console.log("PL DETAILS", tracks)
+        // console.log();
 
         return (
             <View
@@ -145,7 +148,7 @@ class PlaylistDetails extends React.PureComponent {
                             numberOfLines={2}
                             parentStyle={styles.textParentStyle}
                         >
-                            {tracks ? String(tracks.length) + ' Tracks' : '0 Tracks'}
+                            {tracks && tracks.length ? String(tracks.length) + ' Tracks' : '0 Tracks'}
                         </MyAppText>
                         <MyAppText
                             size={14}
@@ -172,13 +175,13 @@ class PlaylistDetails extends React.PureComponent {
                         style={styles.eachButton}
                         onPress={this._addPLToQueue}
                     >
-                        <FontelloIcon name="play" size={24} color={currentColor} />
+                        <FontelloIcon name="play-my" size={24} color={currentColor} />
                     </Button>
                     <Button
                         style={styles.eachButton}
                         onPress={this.openModal}
                     >
-                        <FontelloIcon name="add-playlist" size={24} color={currentColor} />
+                        <FontelloIcon name="add-music" size={24} color={currentColor} />
                     </Button>
                 </View>
                 <TrackListModal
@@ -186,6 +189,7 @@ class PlaylistDetails extends React.PureComponent {
                     onCancel={this.closeModal}
                     name={name}
                     navigation={navigation}
+                    playlistId={playlistId}
                     initialTracks={tracks}
                 />
             </View>

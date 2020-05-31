@@ -81,9 +81,4 @@ function AlbumImage(props) {
         </ViewGradient>
     );
 }
-function mapStateToProps(state) {
-    const currentTrack = state.player.currentTrack;
-    const favourites = state.favourites.favourites;
-    return { currentTrack: currentTrack, favourites: favourites };
-}
-export default connect(mapStateToProps)(withTheme(AlbumImage));
+export default (withTheme(AlbumImage));

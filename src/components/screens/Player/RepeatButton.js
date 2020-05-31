@@ -34,7 +34,7 @@ const RepeatButton = ({ style, size = 24, iconColor, activeColor, controls, setL
     //     switchRepeaters();
     // }
     // const switchRepeaters = () => {
-    //     if (!state.isLoop) {
+    //     if (!state.isLoop) { 
     //         dispatch({ type: "on" });
     //     }
     //     else if (state.iconName === "loop" && (state.isLoop && state.isToggled !== "loop-1")) {
@@ -53,7 +53,7 @@ const RepeatButton = ({ style, size = 24, iconColor, activeColor, controls, setL
         <Button
             style={style}
             onPress={toggleLoop}
-            activeOpacity={0.5}
+            activeOpacity={0.5} 
             underlayColor={"transparent"} 
         >
             <FontelloIcon
@@ -67,7 +67,7 @@ const RepeatButton = ({ style, size = 24, iconColor, activeColor, controls, setL
 
 function mapStateToProps(state) {
     return {
-        controls: state.controls, 
+        controlType: state.controlType, 
     };
 }
 

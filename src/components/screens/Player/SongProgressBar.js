@@ -1,11 +1,11 @@
 import React from 'react';
-import {View, StyleSheet} from 'react-native';
-import TrackPlayer, {ProgressComponent} from 'react-native-track-player';
-import {connect} from 'react-redux';
+import { View, StyleSheet } from 'react-native';
+import TrackPlayer, { ProgressComponent } from 'react-native-track-player';
+import { connect } from 'react-redux';
 import Slider from '@react-native-community/slider';
 
 import MyAppText from '../../commons/MyAppText';
-import {withTheme} from '../../globals/ThemeProvider';
+import { withTheme } from '../../globals/ThemeProvider';
 
 const styles = StyleSheet.create({
 	parent: {
@@ -60,7 +60,7 @@ class SongProgressBar extends ProgressComponent {
 	// }
 
 	formatPostion($sec) {
-		const formatTwoDigits = function(n) {
+		const formatTwoDigits = function (n) {
 			return n < 10 ? '0' + String(n) : n;
 		};
 
@@ -69,7 +69,7 @@ class SongProgressBar extends ProgressComponent {
 		const min = parseInt($second / 60);
 		const sec = parseInt($second % 60);
 
-		return {min: formatTwoDigits(min), sec: formatTwoDigits(sec)};
+		return { min: formatTwoDigits(min), sec: formatTwoDigits(sec) };
 	}
 
 	// async _seekOnDrag(value) {
@@ -82,7 +82,7 @@ class SongProgressBar extends ProgressComponent {
 
 	_seekOnDrag(value) {
 		this.setState(
-			() => ({isSliding: false}),
+			() => ({ isSliding: false }),
 			() => {
 				this._seek(value);
 			},
@@ -99,7 +99,7 @@ class SongProgressBar extends ProgressComponent {
 
 	_pause() {
 		this.setState(
-			() => ({isSliding: true}),
+			() => ({ isSliding: true }),
 			() => {
 				TrackPlayer.pause();
 			},
@@ -107,8 +107,10 @@ class SongProgressBar extends ProgressComponent {
 	}
 
 	render() {
-		const {currentTheme, theme} = this.props;
+		const { currentTheme, theme } = this.props;
 
+		const disabledColor = currentTheme.text.disabled;
+		const disable = !this.props.currentTrackId;
 		const color =
 			currentTheme.name === 'dark'
 				? theme.pallete.primary.main
@@ -120,6 +122,7 @@ class SongProgressBar extends ProgressComponent {
 		const progressOnSlide = this.formatPostion(
 			this.state.slideProgress * this.state.duration,
 		);
+
 		// console.log("duration : ", this.state.duration, "| progressTimer :", this.state.position);
 
 		return (
@@ -138,14 +141,16 @@ class SongProgressBar extends ProgressComponent {
 						onSlidingStart={this._pause}
 						onSlidingComplete={this._seekOnDrag}
 						onValueChange={value => {
-							this.setState({slideProgress: value});
+							this.setState({ slideProgress: value });
 						}}
+						disabled={disable}
 						maximumTrackTintColor={color}
 						minimumTrackTintColor={color}
 						thumbTintColor={color}
 					/>
 				</View>
 				<View style={styles.timerParent}>
+
 					<MyAppText
 						style={styles.timerText}
 						size={14}
@@ -154,9 +159,10 @@ class SongProgressBar extends ProgressComponent {
 						{this.state.isSliding
 							? `${progressOnSlide.min}:${progressOnSlide.sec}`
 							: (progressTimer)
-							? `${progressTimer.min}:${progressTimer.sec}`
-							: '00:00'}
+								? `${progressTimer.min}:${progressTimer.sec}`
+								: '00:00'}
 					</MyAppText>
+
 					<MyAppText style={styles.timerText} size={14} variant="semiBold">
 						{duration ? `${duration.min}:${duration.sec}` : '00:00'}
 					</MyAppText>
@@ -169,6 +175,7 @@ class SongProgressBar extends ProgressComponent {
 function mapStateToProps(state) {
 	return {
 		playerState: state.player.state,
+		currentTrackId: state.player.currentTrack,
 	};
 }
 

@@ -1,20 +1,13 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, ScrollView } from "react-native";
-import MyAppText from "../MyAppText";
-import FontelloIcon from "../FontelloIcon";
-import Button from "../Button";
 import PlayPauseButton from "./PlayPauseButton";
-import { theme } from "../../globals/theme";
-import { withTheme } from "../../globals/ThemeProvider";
 import NextButton from "./NextButton";
 import CurrentSong from "./CurrentSong";
 import ViewGradient from "../ViewGradient";
 import PopOuts from "./PopOuts";
-import { connect } from "react-redux";
 import TrackPlayer from 'react-native-track-player';
-import { updatePlayer } from "../../../actions/player";
-import AsyncStorage from "@react-native-community/async-storage";
-
+import { connect } from "react-redux";
+import { addToQueue } from "../../../actions/queue";
 
 
 const styles = StyleSheet.create({
@@ -42,15 +35,22 @@ const styles = StyleSheet.create({
     },
 })
 
-class MiniPlayer extends React.PureComponent {
+class MiniPlayer extends React.Component {
     constructor(props) {
         super(props);
         this._togglePlayPause = this._togglePlayPause.bind(this)
         this._skipToNext = this._skipToNext.bind(this)
+        this.playRandomTrack = this.playRandomTrack.bind(this)
+    }
+
+    async playRandomTrack() {
+        let randomTrackId = this.props.queue
+            && this.props.queue.length
+            && this.props.queue[Math.floor(Math.random() * this.props.queue.length)];
+        await TrackPlayer.skip(String(randomTrackId));
     }
 
     _togglePlayPause() {
-        // (this.props.state == TrackPlayer.STATE_PAUSED) || (this.props.state == TrackPlayer.STATE_STOPPED)
         if (!this.props.isPlaying) {
             TrackPlayer.play();
         } else {
@@ -58,28 +58,28 @@ class MiniPlayer extends React.PureComponent {
         }
     }
     async _skipToNext() {
-        // (this.props.state == TrackPlayer.STATE_PAUSED) || (this.props.state == TrackPlayer.STATE_STOPPED)
-        if (this.props.controls && this.props.controls.isShuffle) {
-            await this.props.playRandomTrack();
-        }else{
-            if (!this.props.isLast) {
+        const isLast = ((this.props.queue && this.props.currentTrack && this.props.currentTrack.id)
+            && this.props.queue.indexOf(this.props.currentTrack.id) === this.props.queue.length - 1)
+
+        if (this.props.controlType === "shuffle") {
+            await this.playRandomTrack();
+        } else {
+            if (!isLast) {
                 await TrackPlayer.skipToNext();
             } else {
                 if (
-                    this.props.controls.isLoop
-                    && this.props.controls.loopType === "all"
-                    && this.props.firstTrack
+                    this.props.controlType === "loop-all"
+                    && this.props.queue[0]
                 ) {
-                    await TrackPlayer.skip(this.props.firstTrack.id);
+                    await TrackPlayer.skip(this.props.queue[0]);
                 }
             }
         }
     }
 
     render() {
-        const { theme, currentTheme, isPlaying, isLast, navigation } = this.props
-        // console.log("Miniplayer", this.props.controls);
- 
+        const { navigation } = this.props
+        // console.log("Miniplayer", this.props.controlType);
         return (
             <ViewGradient
                 gradientStyle={styles.parentGradientStyle}
@@ -88,14 +88,14 @@ class MiniPlayer extends React.PureComponent {
                 onlyBorder
                 borderWidth={1}
             >
-                <PopOuts />
+                <PopOuts navigation={navigation} />
                 <View
                     style={styles.currentSongParent}
                 >
                     <CurrentSong
                         onPress={() => navigation.navigate('Player')}
-                        songName={this.props.track ? this.props.track.title : "Unknown Title"}
-                        songAuthor={this.props.track ? this.props.track.artist : "Unknown Artist"}
+                        songName={this.props.currentTrack ? this.props.currentTrack.title : "Unknown Title"}
+                        songAuthor={this.props.currentTrack ? this.props.currentTrack.artist : "Unknown Artist"}
                     />
                 </View>
 
@@ -104,16 +104,17 @@ class MiniPlayer extends React.PureComponent {
                 >
                     <PlayPauseButton
                         style={styles.controls}
-                        isPlaying={isPlaying}
+                        isPlaying={this.props.isPlaying}
                         onPress={this._togglePlayPause}
                         underlayColor={"transparent"}
+                        disabled={!this.props.currentTrack}
                     />
 
                     <NextButton
                         style={styles.controls}
                         onPress={this._skipToNext}
                         underlayColor={"transparent"}
-                        disabled={this.props.controls && (!this.props.controls.isLoop && isLast) && !(this.props.controls.isShuffle)}
+                        disabled={!this.props.currentTrack}
                     />
                 </View>
             </ViewGradient>
@@ -121,7 +122,23 @@ class MiniPlayer extends React.PureComponent {
     }
 }
 
-export default MiniPlayer;
+function mapStateToProps(state) {
+    return {
+        currentTrack: state.tracks.byId[state.player.currentTrack],
+        queue: state.library.queue,
+        playlists: state.playlists,
+        controlType: state.player.controlType,
+        isPlaying: state.player.state === TrackPlayer.STATE_PLAYING,
+        tracks: state.tracks,
+    };
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        addToQueue: (track) => dispatch(addToQueue(track)),
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(MiniPlayer);
 
 /*
 
@@ -160,8 +177,8 @@ class MiniPlayer extends React.PureComponent {
                 >
                     <CurrentSong
                         onPress={() => navigation.navigate('Player')}
-                        songName={this.props.track ? this.props.track.title : "Unknown Title"}
-                        songAuthor={this.props.track ? this.props.track.artist : "Unknown Artist"}
+                        songName={this.props.currentTrack ? this.props.currentTrack.title : "Unknown Title"}
+                        songAuthor={this.props.currentTrack ? this.props.currentTrack.artist : "Unknown Artist"}
                     />
                 </View>
 

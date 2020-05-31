@@ -8,7 +8,7 @@ import * as Animatable from 'react-native-animatable';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 
-function Loading({ currentTheme, theme } ) {
+function Loading({ currentTheme, theme }) {
     const hieght_0 = {
         0: {
             opacity: 1,
@@ -48,15 +48,15 @@ function Loading({ currentTheme, theme } ) {
                     delay={500}
                     useNativeDriver
                 >
-                    <FontelloIcon name={"add-playlist"} size={64} color={currentTheme.text.primary} />
+                    <FontelloIcon name={"add-music"} size={64} color={currentTheme.text.primary} />
                     {/* <Icon name={"headphones"} size={64} color={currentTheme.text.primary} /> */}
                 </Animatable.View>
 
-                <Animatable.Text
+                <Animatable.Text 
                     style={{
                         marginTop: 16,
                         fontFamily: theme.font.montserrat.bold,
-                        fontSize: 24, 
+                        fontSize: 24,
                         color: currentTheme.text.primary,
                         textAlign: "center",
                     }}

@@ -35,6 +35,7 @@ const Input = ({
     gradientProps,
     theme,
     currentTheme,
+    setRef,
     ...others
 }) => {
     const contrastValue = (currentTheme.name === "dark") ? 0.5 : -0.5;
@@ -57,6 +58,7 @@ const Input = ({
             {...gradientProps}
         >
             <TextInput
+                ref={setRef}
                 style={[
                     styles.inputStyle,
                     { color: color, },
@@ -65,7 +67,6 @@ const Input = ({
                 selectionColor={themeColor}
                 // disabled={disabled}
                 editable={(!disabled && !readOnly)}
-                maxLength={255}
                 placeholderTextColor={contrast}
                 {...others}
             />

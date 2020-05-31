@@ -1,14 +1,15 @@
 import { combineReducers } from 'redux';
-import { libraryReducer, playerReducer, playerControlReducer } from './player';
+import { playerReducer } from './player';
+import { libraryReducer } from './library';
+
+import { tracksReducer } from './tracks';
+import { lyricsReducer } from './lyrics';
 import { playlistReducer } from './playlists';
-import { favouritesReducer } from './favourites';
-import { queueReducer } from './queue';
 
 module.exports = combineReducers({
     library: libraryReducer,
     player: playerReducer,
-    controls:playerControlReducer,
-    favourites: favouritesReducer,
+    tracks: tracksReducer,
+    lyrics: lyricsReducer,
     playlists: playlistReducer,
-    queue: queueReducer,
-});
+}); 

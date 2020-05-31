@@ -15,8 +15,9 @@ import PlaylistTracksScreen from '../screens/Playlist/PlaylistTracksScreen';
 import PlaylistScreenHeader from '../screens/Playlist/Header';
 import PlaylistEditScreen from '../screens/Playlist/PlaylistEditScreen';
 
-import LyricsScreen from '../screens/Lyrics/LyricsScreen';
+import LyricsScreen from '../screens/Lyrics/LyricsScreen'; 
 import LyricsEditScreen from '../screens/Lyrics/LyricsEditScreen';
+import LyricsAddScreen from '../screens/Lyrics/LyricsAddScreen';
 
 import SettingScreen from '../screens/Settings/SettingScreen';
 
@@ -121,6 +122,14 @@ export const LyricsStack = () => (
             name="LyricsEditScreen"
             component={LyricsEditScreen}
         />
+        <Stack.Screen options={
+            {
+                header: ({ navigation, scene }) => (<PlayerScreenHeader navigation={navigation} songName="labore et dolore labore et dolore labore et dolore labore et dolore labore et dolore labore et dolore " />),
+            }
+        }
+            name="LyricsAddScreen"
+            component={LyricsAddScreen}
+        />
     </Stack.Navigator>
 )
 
@@ -131,7 +140,7 @@ export const SongInfoStack = () => (
         <Stack.Screen options={
             {
                 header: (props) => (<SongInfoScreenHeader {...props} />),
-                title:"Song Info",
+                title: "Song Info",
             }
         }
             name="SongInfoScreen"
@@ -139,7 +148,7 @@ export const SongInfoStack = () => (
         />
         <Stack.Screen options={
             {
-                title:"Edit Song Info",
+                title: "Edit Song Info",
                 header: (props) => (<SongInfoScreenHeader {...props} />),
             }
         }

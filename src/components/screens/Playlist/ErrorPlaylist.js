@@ -70,7 +70,7 @@ class ErrorPlaylist extends React.PureComponent {
             >
                 <ErrorMessage
                     message={"No Playlist Found !"}
-                    type={"track"}
+                    type={"warning"}
                     size={20}
                     style={styles.flexZero}
                 />
@@ -94,7 +94,7 @@ class ErrorPlaylist extends React.PureComponent {
                             color={"#fff"}
                             >
                             <FontelloIcon
-                                name="add-playlist"
+                                name="playlist-plus" 
                                 size={24}
                                 color={"#fff"}
                             /> Create

@@ -9,6 +9,7 @@ import SongList from "../../commons/SongRow/SongList";
 import MyModal from "../../commons/MyModal";
 import { addTracksToPlaylist } from "../../../actions/playlists";
 import { withTheme } from "../../globals/ThemeProvider";
+import FontelloIcon from "../../commons/FontelloIcon";
 
 const styles = StyleSheet.create({
     parent: {
@@ -44,12 +45,12 @@ class TrackListModal extends React.Component {
 
     _addSongsToPlaylist() {
         const tracks = this.state.addedTracks;
-        const { initialTracks = [], name } = this.props;
+        const { initialTracks = [], playlistId } = this.props;
         if (
             (tracks.length > 0)
             && ((initialTracks.length !== tracks.length))
         ) {
-            this.props.addTracksToPlaylist(name, tracks);
+            this.props.addTracksToPlaylist(playlistId, tracks);
             this.props.navigation.navigate('PlaylistScreen')
         }
 
@@ -58,7 +59,6 @@ class TrackListModal extends React.Component {
     _addToSelections(track) {
         const prevItems = this.state.addedTracks.concat();
         prevItems.push(track);
-
         this.setState(() => ({ addedTracks: prevItems }));
         // console.log("ADDED", this.state.addedTracks)
     }
@@ -70,10 +70,11 @@ class TrackListModal extends React.Component {
                 style={
                     styles.modalToggler
                 }
-                onPress={this._addToSelections.bind(this, props.track)}
+                onPress={this._addToSelections.bind(this, props.id)}
                 underlayColor={"transparent"}
             >
-                <Icon name="library-plus" color={color} size={24} />
+                <FontelloIcon name="playlist-plus" color={color} size={24} />
+                {/* <Icon name="library-plus" color={color} size={24} /> */}
             </Button>
         )
     }
@@ -87,9 +88,10 @@ class TrackListModal extends React.Component {
 
     render() {
         const { theme, currentTheme } = this.props;
-        const selectedTracks = JSON.stringify(this.state.addedTracks);
-        const unSelectedTracks = this.props.tracks.filter((e) => !selectedTracks.includes(e.id));
-
+        const selectedTracks = this.state.addedTracks;
+        const unSelectedTracks = this.props.tracks
+            && this.props.tracks.allIds
+            && this.props.tracks.allIds.filter((e) => !selectedTracks.includes(e));
         return (
             <MyModal
                 setRef={this.props.setModalRef}
@@ -101,28 +103,37 @@ class TrackListModal extends React.Component {
             >
 
                 <SongList
-                    tracks={unSelectedTracks}
-                    currentTrack={this.props.currentTrack}
+                    trackIds={unSelectedTracks}
+                    currentTrackId={(this.props.currentTrackId)}
                     RightSideComponent={this._renderSideComponent}
                     ListHeaderComponent={
                         <MyAppText
                             numberOfLines={1}
                             size={16}
-                            parentStyle={[
+                            parentStyle={StyleSheet.compose([
                                 styles.modalTitle,
                                 {
-                                    backgroundColor: "#666",
-                                    // backgroundColor: currentTheme.background,
+                                    // backgroundColor: "#666",
+                                    backgroundColor: currentTheme.background,
+                                    flex: 1,
+                                    borderBottomColor: theme.pallete.primary.main,
+                                    borderBottomWidth: 2
                                 }
-                            ]}
+                            ])}
                         >
                             {
                                 "Songs Added "
                                 + String(this.state.addedTracks.length)
-                                + " of " + String(this.props.tracks.length)
+                                + " of " + String(this.props.tracks
+                                    && this.props.tracks.allIds
+                                    && this.props.tracks.allIds.length
+                                )
                             }
                         </MyAppText>
                     }
+                    contentContainerStyle={{
+                        padding: 0,
+                    }}
                     stickyHeaderIndices={[0]}
                 />
             </MyModal>
@@ -132,14 +143,14 @@ class TrackListModal extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        currentTrack: state.player.currentTrack,
-        tracks: state.library.tracks,
+        currentTrackId: state.player.currentTrack,
+        tracks: state.tracks,
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        addTracksToPlaylist: (name, track) => dispatch(addTracksToPlaylist(name, track))
+        addTracksToPlaylist: (playlistId, trackId) => dispatch(addTracksToPlaylist(playlistId, trackId))
     }
 }
 

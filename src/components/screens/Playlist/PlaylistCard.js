@@ -74,19 +74,17 @@ class PlaylistCard extends React.PureComponent {
 
     _navigateToPLTracks() {
 
-        const { name, tracks, createdOn } = this.props
+        const { id } = this.props
 
         this.props.navigation.navigate('PlaylistTracksScreen', {
-            name: name,
-            tracks: tracks,
-            createdOn: createdOn,
+            playlistId: id,
         });
 
     }
 
-    _addPLToQueue() {
+    async _addPLToQueue() {
         const { tracks } = this.props;
-        this.props.addMultipleToQueue(tracks);
+        await this.props.addMultipleToQueue(tracks);
         TrackPlayer.play();
     }
 
@@ -101,6 +99,8 @@ class PlaylistCard extends React.PureComponent {
         const contrastValue = (currentTheme.name === "dark") ? 0.3 : -0.3;
         const contrast = theme.lightenDarken(contrastValue, theme.hexToRGB(currentTheme.background));
         const currentColor = currentTheme.text.primary;
+
+        console.log("PLAYLIST CARD:::", tracks);
 
         return (
             <Button
@@ -148,7 +148,7 @@ class PlaylistCard extends React.PureComponent {
                                 underlayColor={"transparent"}
                                 activeOpacity={0.5}
                             >
-                                <FontelloIcon color={currentColor} size={16} name={"play"} />
+                                <FontelloIcon color={currentColor} size={24} name={"play"} />
                             </Button>
                         </View>
                     </ViewGradient>

@@ -48,47 +48,43 @@ class PlayerControl extends React.Component {
 	}
 
 	async _skipToPrev() {
-		const isLast =
-			this.props.queue &&
-			this.props.currentTrack &&
-			this.props.queue.findIndex(e => e.id === this.props.currentTrack.id) ===
-			0;
-		if (!isLast) {
+
+		const isFirst = ((this.props.queue && this.props.currentTrackId)
+			&& this.props.queue.indexOf(this.props.currentTrackId) === 0)
+
+		if (!isFirst) {
 			await TrackPlayer.skipToPrevious();
 		} else {
-			if (this.props.controls.isLoop && this.props.queue) {
-				await TrackPlayer.skip(
-					this.props.queue[this.props.queue.length - 1].id,
-				);
-			}
+			await TrackPlayer.skip(
+				this.props.queue[this.props.queue.length - 1],
+			);
 		}
 	}
 
 	async _skipToNext() {
-		const isLast =
-			this.props.queue &&
-			this.props.currentTrack &&
-			this.props.queue.findIndex(e => e.id === this.props.currentTrack.id) ===
-			this.props.queue.length - 1;
-		if (!this.props.controls.isShuffle) {
+
+		const isLast = ((this.props.queue && this.props.currentTrackId)
+			&& this.props.queue.indexOf(this.props.currentTrackId) === this.props.queue.length - 1)
+
+		if (!this.props.controlType === "shuffle") {
 			if (!isLast) {
 				await TrackPlayer.skipToNext();
 			} else {
-				if (this.props.controls.isLoop && this.props.queue) {
-					await TrackPlayer.skip(this.props.queue[0].id);
+				if (this.props.controlType.includes("loop") && this.props.queue) {
+					await TrackPlayer.skip(this.props.queue[0]);
 				}
 			}
 		} else {
 			if (this.props.tracks && this.props.queue) {
-				const randomTrack = this.props.tracks[Math.floor(Math.random() * this.props.tracks.length)];
-				console.log("\n\n\n\nPLAYER CONTROL::::: \n\n\n\n",await TrackPlayer.getQueue());
+				const randomTrackId = this.props.tracks.allIds[Math.floor(Math.random() * this.props.tracks.allIds.length)];
+				console.log("\n\n\n\nPLAYER CONTROL::::: \n\n\n\n", await TrackPlayer.getQueue());
 
-				if (!(this.props.queue.find((e) => randomTrack.id === e.id))) {
-					await this.props.addToQueue(randomTrack);
-					await TrackPlayer.skip(String(randomTrack.id));
+				if (!(this.props.queue.includes(randomTrackId))) {
+					await this.props.addToQueue(randomTrackId);
+					await TrackPlayer.skip(String(randomTrackId));
 					TrackPlayer.play();
 				} else {
-					await TrackPlayer.skip(randomTrack.id);
+					await TrackPlayer.skip(randomTrackId);
 				}
 			}
 		}
@@ -108,26 +104,14 @@ class PlayerControl extends React.Component {
 		const { theme, currentTheme } = this.props;
 
 		const iconColor = currentTheme.text.primary;
+		const disabledColor = currentTheme.text.disabled
+		const disable = !this.props.currentTrackId;
 
 		const color =
 			currentTheme.name === 'dark'
 				? theme.pallete.primary.main
 				: theme.pallete.secondary.main;
 
-		const isPlaying = this.props.state == TrackPlayer.STATE_PLAYING;
-
-		const isLast =
-			this.props.queue &&
-			this.props.currentTrack &&
-			(this.props.queue.findIndex(
-				e => e.id === this.props.currentTrack.id,
-			)) === this.props.queue.length - 1;
-
-		const isFirst = this.props.queue
-			&& this.props.currentTrack
-			&& (this.props.queue.findIndex(
-				e => e.id === this.props.currentTrack.id
-			)) === 0;
 
 		return (
 			<View style={styles.parent}>
@@ -137,20 +121,12 @@ class PlayerControl extends React.Component {
 						activeOpacity={0.5}
 						style={styles.iconsParent}
 						underlayColor={'transparent'}
-						disabled={
-							this.props.controls && (!this.props.controls.isLoop && isFirst)
-						}>
+						disabled={disable}
+					>
 						<FontelloIcon
 							name="prev"
 							size={20}
-							color={
-								!(
-									this.props.controls &&
-									(!this.props.controls.isLoop && isFirst)
-								)
-									? iconColor
-									: currentTheme.text.disabled
-							}
+							color={disable ? disabledColor : iconColor}
 						/>
 					</Button>
 
@@ -158,8 +134,14 @@ class PlayerControl extends React.Component {
 						onPress={this._jumpBackward}
 						activeOpacity={0.5}
 						style={styles.iconsParent}
-						underlayColor={'transparent'}>
-						<FontelloIcon name="backward-10" size={28} color={iconColor} />
+						underlayColor={'transparent'}
+						disabled={disable}
+					>
+						<FontelloIcon
+							name="backward-10"
+							size={28}
+							color={disable ? disabledColor : iconColor}
+						/>
 					</Button>
 
 					{/* PLAY */}
@@ -168,11 +150,13 @@ class PlayerControl extends React.Component {
 						onPress={this._playPause}
 						activeOpacity={0.5}
 						style={styles.iconsParent}
-						underlayColor={'transparent'}>
+						underlayColor={'transparent'}
+						disabled={disable}
+					>
 						<FontelloIcon
-							name={isPlaying ? 'pause' : 'play-my'}
+							name={this.props.state == TrackPlayer.STATE_PLAYING ? 'pause' : 'play-my'}
 							size={36}
-							color={color}
+							color={disable ? disabledColor : color}
 						/>
 					</Button>
 
@@ -180,8 +164,10 @@ class PlayerControl extends React.Component {
 						onPress={this._jumpForward}
 						activeOpacity={0.5}
 						style={styles.iconsParent}
-						underlayColor={'transparent'}>
-						<FontelloIcon name="forward-10" size={28} color={iconColor} />
+						underlayColor={'transparent'}
+						disabled={disable}
+					>
+						<FontelloIcon name="forward-10" size={28} color={disable ? disabledColor : iconColor} />
 					</Button>
 
 					<Button
@@ -189,22 +175,12 @@ class PlayerControl extends React.Component {
 						activeOpacity={0.5}
 						style={styles.iconsParent}
 						underlayColor={'transparent'}
-						disabled={
-							this.props.controls &&
-							(
-								(!this.props.controls.isLoop && isLast)
-								&& !(this.props.controls.isShuffle)
-							)
-						}>
+						disabled={disable}
+					>
 						<FontelloIcon
 							name="next"
 							size={20}
-							color={
-								this.props.controls &&
-									(!(!this.props.controls.isLoop && isLast) || (this.props.controls.isShuffle))
-									? iconColor
-									: currentTheme.text.disabled
-							}
+							color={disable ? disabledColor : iconColor}
 						/>
 					</Button>
 				</View>
@@ -214,7 +190,7 @@ class PlayerControl extends React.Component {
 					style={{
 						width: '100%',
 					}}>
-					<BottomButtons navigation={this.props.navigation} />
+					<BottomButtons disabled={disable} disabledColor={disabledColor} navigation={this.props.navigation} />
 				</View>
 			</View>
 		);
@@ -224,23 +200,23 @@ class PlayerControl extends React.Component {
 function mapStateToProps(state) {
 	return {
 		state: state.player.state,
-		tracks: state.library.tracks,
-		currentTrack: state.player.currentTrack,
-		queue: state.queue.queue,
-		controls: state.controls,
+		tracks: state.tracks,
+		currentTrackId: state.player.currentTrack,
+		controlType: state.player.controlType,
+		queue: state.library.queue,
 	};
 }
 function mapDispatchToProps(dispatch) {
 	return {
 		addToQueue: (track) => dispatch(addToQueue(track))
 	}
-} 
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(withTheme(PlayerControl));
 
 /*
 <View
-                    style={{
+                    style={{ 
                         width: "100%"
                     }}
                 >
@@ -262,7 +238,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(withTheme(PlayerCont
                             style={styles.lyricDrawerButton}
                             onPress={() => console.log("Playlist")}
                         >
-                            <FontelloIcon name="lyrics" size={24} color={iconColor} />
+                            <FontelloIcon name="lyrics" size={24} color={disable ? disabledColor : iconColor} />
                         </Button>
                     </ViewGradient>
                     <ViewGradient

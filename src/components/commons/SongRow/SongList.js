@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, FlatList } from "react-native";
 import MyAppText from "../MyAppText";
 import SongRow from "./SongRow";
+import { connect } from "react-redux";
 
 
 const styles = StyleSheet.create({
@@ -12,7 +13,7 @@ const styles = StyleSheet.create({
     },
 })
 
-class SongList extends React.PureComponent { 
+class SongList extends React.PureComponent {
 
     constructor(props) {
         super(props);
@@ -22,7 +23,7 @@ class SongList extends React.PureComponent {
     }
 
     // shouldComponentUpdate(nextProps, nextState) {
-        // console.log((this.props.songName !== nextProps.songName) , this.props.songName.substring(0,50))
+    // console.log((this.props.songName !== nextProps.songName) , this.props.songName.substring(0,50))
     //     return (
     //         (this.props.songName !== nextProps.songName)
     //         || (this.props.songAuthor !== nextProps.songAuthor)
@@ -31,52 +32,52 @@ class SongList extends React.PureComponent {
     //     )
     // }
 
-    _getItemLayout = (data, index) => ({
-        length: 50,
-        offset: parseInt(50 * index),
-        index
-    })
+    _getItemLayout(data, index) {
+        return ({
+            length: 50,
+            offset: parseInt(50 * index),
+            index
+        })
+    }
 
-    _keyExtracter = (item) => (item.id);
+    _keyExtracter(item) { return (item) };
 
     _renderItem({ item, index }) {
-        return (
+        let track = this.props.tracks && this.props.tracks.byId[item];
+        return track ? (
             <SongRow
-                key={item.id}
-                songName={item.title}
-                songAuthor={item.artist}
-                id={item.id}
-                track={item}
+                key={item}
+                songName={track && track.title}
+                songAuthor={track && track.artist}
+                id={item}
+                track={track}
                 RightSideComponent={this.props.RightSideComponent}
-                currentTrack={this.props.currentTrack ? this.props.currentTrack.id : null}
-                
-            // onPressPlay={this._handleOnPress.bind(this, item)}
+                currentTrackId={this.props.currentTrackId}
             />
-        )
+        ) : null;
     }
-    
+
     render() {
         const {
-            tracks,
+            trackIds,
             ...others
         } = this.props;
-
         return (
-            <FlatList 
+            <FlatList
                 contentContainerStyle={{
                     padding: 16,
                 }}
-                data={tracks}
+                data={trackIds || (this.props.tracks && this.props.tracks.allIds)}
                 renderItem={this._renderItem}
-                // keyExtractor={this._keyExtracter}
+                keyExtractor={this._keyExtracter}
                 // refreshing={true}
                 // getItemLayout={this._getItemLayout}
-                // removeClippedSubviews={true}
-                updateCellsBatchingPeriod={5}
+                removeClippedSubviews={true}
+                updateCellsBatchingPeriod={30}
                 // extraData={isActive}
-                initialNumToRender={14}
-                windowSize={5}
-                maxToRenderPerBatch={7}
+                initialNumToRender={20}
+                windowSize={7}
+                maxToRenderPerBatch={1}
                 numColumns={1}
                 // disableVirtualization
                 {...others}
@@ -84,4 +85,10 @@ class SongList extends React.PureComponent {
         )
     }
 }
-export default SongList;
+
+function mapStateToProps(state) {
+    return {
+        tracks: state.tracks,
+    };
+}
+export default connect(mapStateToProps)(SongList);

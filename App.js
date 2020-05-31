@@ -13,18 +13,21 @@ import { NavigationContainer, } from '@react-navigation/native';
 import { ThemeContext, theme } from './src/components/globals/ThemeProvider';
 
 import AsyncStorage from '@react-native-community/async-storage';
-import DrawerNavigator from './src/components/navigations/DrawerNavigator';
 import * as RNFS from 'react-native-fs';
 import * as Animatable from 'react-native-animatable';
 
 import { request, PERMISSIONS } from 'react-native-permissions';
 
-import { updatePlayer, initializePlayer, libraryStatus, UPDATE_LIBRARY, updateLibrary, playerTrack, } from './src/actions/player';
-import BackgroundFetch from 'react-native-background-fetch';
-import { loadTracks, sortMusicList } from './src/constants/utils';
-import { updateFavourites } from './src/actions/favourites';
-import { updateQueue, addToQueue, addMultipleToQueue } from './src/actions/queue';
-import { updatePlaylists } from './src/actions/playlists';
+import { createStore, applyMiddleware } from 'redux';
+import thunkMiddleware from 'redux-thunk';
+import reducers from './src/reducers';
+import Root from './src/Root';
+import { updatePlayer, initializePlayer } from './src/actions/player';
+import { PersistGate } from 'redux-persist/integration/react';
+import { persistor } from './src/store/configStore';
+
+
+// const store = createStore(reducers, applyMiddleware(thunkMiddleware));
 
 class App extends React.Component {
 
@@ -32,22 +35,19 @@ class App extends React.Component {
 
 	constructor(props) {
 		super(props);
-
 		this.toggleTheme = this.toggleTheme.bind(this);
-		this.fetchSavedTheme = this.fetchSavedTheme.bind(this);
-
+		this.makeAppReady = this.makeAppReady.bind(this);
 		this.state = {
 			currentTheme: theme.light,
 			theme: theme,
 			toggleTheme: this.toggleTheme,
-			fetchingTheme: true,
-			alreadyCheckedFS: false,
+			isReady: false,
 		}
-
 	}
+
 	toggleTheme() {
 		const newTheme = this.state.currentTheme.name === "light" ? theme.dark : theme.light;
-		AsyncStorage.setItem('currentTheme', JSON.stringify(newTheme)).then(() => {
+		AsyncStorage.setItem('@APP:theme', JSON.stringify(newTheme)).then(() => {
 			this.setState(() => ({ currentTheme: newTheme }));
 		});
 	}
@@ -58,232 +58,52 @@ class App extends React.Component {
 		}
 	}
 
-
-	async _syncFromLocalStorage() {
-		let data;
-		try {
-			// console.time("FETCH_SONG");
-			data = await loadTracks(); 
-			// console.timeEnd("FETCH_SONG");
-
-			sortMusicList(data.musicList);
-
-			App.store.dispatch({
-				type: UPDATE_LIBRARY,
-				tracks: data.musicList
-			});
-
-			await AsyncStorage.setItem('musicData', JSON.stringify(data));
-
-			return data;
-
-		} catch (e) {
-			App.store.dispatch(libraryStatus(false, e));
-		};
-	}
-
-
-	logInConsole(desc, msg = "") {
-		console.log(`\n\n${desc.toUpperCase()}:::::::::::::::\n\n${JSON.stringify(msg)}\n\n`);
-	}
-
-	makeEverythingReady = async () => {
-		try {
-
-			// this.logInConsole("Getting Ready.");
-
-			let [
-				[$music_data, musicData],
-				[$last_played, lastPlayed],
-				[$queue, queue],
-				[$favourites, favourites],
-				[$playlists, playlists],
-			] = await AsyncStorage.multiGet([
-				'musicData',
-				'lastPlayed',
-				'queue',
-				'favourites',
-				'playlists',
-			]);
-
-			musicData = JSON.parse(musicData);
-			queue = JSON.parse(queue);
-			favourites = JSON.parse(favourites);
-			playlists = JSON.parse(playlists);
-
-			if (musicData) {
-				// this.logInConsole("scanFile", await RNFS.scanFile(musicData.musicList[0].url))
-
-				let syncedMusicList = musicData.musicList.filter(async (e) => {
-					return (await RNFS.exists(e.url));
-				});
-
-				// App.store.dispatch(updateLibrary(musicData.musicList));
-				App.store.dispatch(updateLibrary(syncedMusicList));
-
-				// this.logInConsole("lastPlayed", lastPlayed);
-				lastPlayed = JSON.parse(lastPlayed);
-
-				if (lastPlayed) {
-
-					if (await RNFS.exists(lastPlayed.url)) {
-						App.store.dispatch(playerTrack(lastPlayed));
-						App.store.dispatch(addToQueue(lastPlayed));
-					} else {
-						App.store.dispatch(playerTrack(musicData.musicList[0]));
-						App.store.dispatch(addToQueue(musicData.musicList[0]));
-					}
-				}
-				else {
-					App.store.dispatch(addToQueue(musicData.musicList[0]));
-				}
-
-				if (queue) {
-
-					// let syncedQueue = queue.filter(async (e) => {
-					// 	return (await RNFS.exists(e.url));
-					// });
-
-					let syncedQueue = syncedMusicList.filter((e) => JSON.stringify(queue).includes(e.id));
-
-					App.store.dispatch(updateQueue(syncedQueue));
-				}
-
-				if (favourites) {
-
-					// let syncedFavourites = favourites.filter(async (e) => {
-					// 	return (await RNFS.exists(e.url));
-					// });
-
-					let syncedFavourites = syncedMusicList.filter((e) => JSON.stringify(favourites).includes(e.id));
-
-					App.store.dispatch(updateFavourites(syncedFavourites));
-					// this.logInConsole("syncedFavourites", syncedFavourites)
-				}
-
-				if (playlists) {
-					// let syncedPlaylists = playlists.map((eachPL) => {
-					// 	return {
-					// 		name: eachPL.name,
-					// 		tracks: (
-					// 			(eachPL.tracks.length > 0)
-					// 				? (
-					// 					eachPL.tracks.filter(async (e) => {
-					// 						return (await RNFS.exists(e.url));
-					// 					})
-					// 				)
-					// 				: []
-					// 		)
-					// 	}
-					// });
-					let syncedPlaylists = playlists.map((eachPL) => {
-						return {
-							name: eachPL.name,
-							tracks: (
-								(eachPL.tracks.length > 0)
-									? (
-										syncedMusicList.filter((e) => JSON.stringify(eachPL.tracks).includes(e.id))
-									)
-									: []
-							)
-						} 
-					});
-
-					// this.logInConsole("syncedPlaylists", syncedPlaylists);
-					App.store.dispatch(updatePlaylists(syncedPlaylists));
-				}
-
-				// this.logInConsole("lastPlayed", lastPlayed);
-				// this.logInConsole("favourites", favourites);
-				// this.logInConsole("queue", queue);
-				// this.logInConsole("playlists", playlists);
-			}
-
-			// Check Redux
-			let { ...reduxState } = App.store.getState();
-
-			let reduxLibrary = reduxState.library,
-				reduxPlayer = reduxState.player,
-				reduxFavourites = reduxState.favourites,
-				reduxPlaylists = reduxState.playlists,
-				reduxQueue = reduxState.queue;
-			// this.logInConsole("currentTrack", reduxPlayer.currentTrack);
-			if (!this.state.alreadyCheckedFS) {
-				try {
-					const firstLaunch = reduxLibrary.tracks.length <= 0;
-					// this.logInConsole("Fetching from Device Storage ---APP.");
-					if (firstLaunch) {
-						App.store.dispatch(libraryStatus(true));
-					}
-					let data = await this._syncFromLocalStorage();
-
-					App.store.dispatch(updateLibrary(data.musicList));
-					if (!reduxPlayer.currentTrack && firstLaunch) {
-						App.store.dispatch(playerTrack(data.musicList[0]));
-					}
-					this.setState(() => ({ alreadyCheckedFS: true }))
-				} catch (e) {
-					console.log("APP JSS INNER TRY CATCH", e);
-				}
-			}
-			// App.store.dispatch(initializePlayer());
-			// App.store.dispatch(fetchLibrary());
-			// App.store.dispatch(updatePlayer());
-
-			// console.log("================ END ===============");
-
-		} catch (e) {
-			console.log("APP JS :", e);
-		}
-	}
-
-	fetchSavedTheme = async () => {
-		// await AsyncStorage.clear();
-		const curTheme = await AsyncStorage.getItem('currentTheme');
-
-		if (!curTheme) {
+	makeAppReady = async () => {
+		const curTheme = await AsyncStorage.getItem('@APP:theme');
+		if (
+			(!curTheme || !curTheme.length)
+		) {
 			console.log("no curTheme");
-
 			const newTheme = this.state.currentTheme;
-
-			AsyncStorage.setItem('currentTheme', JSON.stringify(newTheme));
-
+			AsyncStorage.setItem('@APP:theme', JSON.stringify(newTheme));
+			// AsyncStorage.setItem('@APP:state', JSON.stringify(App.store.getState()));
 			this.setState(
 				() => ({
-					fetchingTheme: false
+					isReady: true
 				}),
 				() => {
 					App.store.dispatch(initializePlayer());
 					App.store.dispatch(updatePlayer());
-					this.makeEverythingReady();
 				}
 			)
 		} else {
-			const value = JSON.parse(curTheme)
+			const getTheme = JSON.parse(curTheme);
+			let tracks = App.store && App.store.getState() && App.store.getState().library && App.store.getState().library.queue;
+			// console.log("APP::::", tracks);
 			this.setState(
 				() => ({
-					fetchingTheme: false,
-					currentTheme: value,
+					isReady: true,
+					currentTheme: getTheme,
 				}),
 				() => {
 					App.store.dispatch(initializePlayer());
 					App.store.dispatch(updatePlayer());
-					this.makeEverythingReady();
 				}
 			);
+
 		}
 	}
-
+	flush =async () => {
+		await persistor.purge();
+	}
 	componentDidMount() {
+		// this.flush();
 		AppState.addEventListener('change', this._handleStateChange);
-
-		this.fetchSavedTheme()
-		// .then(() => {
-		// 	App.store.dispatch(initializePlayer());
-		// 	App.store.dispatch(updatePlayer());
-		// 	this.makeEverythingReady()
-		// });
-
+		request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE).then((result) => {
+			if (result == "granted") {
+				this.makeAppReady();
+			}
+		})
 	}
 
 	componentWillUnmount() {
@@ -291,53 +111,72 @@ class App extends React.Component {
 	}
 
 	render() {
-		// this.logInConsole("APPP JSS LOADS")
+		const { isReady, tracks, ...others } = this.state;
 		return (
 			<Provider store={App.store}>
-				<ThemeContext.Provider value={this.state} >
-					<StatusBar backgroundColor={this.state.currentTheme.background} barStyle={this.state.currentTheme.name === "light" ? "dark-content" : "light-content"} />
-					{this.state.fetchingTheme
-						? (
-							<Animatable.View
-								style={{
-									flex: 1,
-									justifyContent: "center",
-									alignItems: "center",
-								}}
-								animation={'fadeInUp'}
-							// duration={1000}
-
-							>
-								<Text
-									style={{
-										fontSize: 24
-									}}
-								>
-									Loading
-							</Text>
-							</Animatable.View>
-						)
-						: (
-							<NavigationContainer>
-								<DrawerNavigator />
-							</NavigationContainer>
-						)}
-				</ThemeContext.Provider>
+				<PersistGate loading={(
+					<Animatable.View
+						style={{
+							flex: 1,
+							justifyContent: "center",
+							alignItems: "center",
+						}}
+						animation={'fadeInUp'}
+					>
+						<Text
+							style={{
+								fontSize: 24
+							}}
+						>
+							Loading
+								</Text>
+					</Animatable.View>
+				)} persistor={persistor}>
+					<ThemeContext.Provider value={others} >
+						<StatusBar backgroundColor={this.state.currentTheme.background} barStyle={this.state.currentTheme.name === "light" ? "dark-content" : "light-content"} />
+						{
+							!isReady
+								? (
+									<Animatable.View
+										style={{
+											flex: 1,
+											justifyContent: "center",
+											alignItems: "center",
+										}}
+										animation={'fadeInUp'}
+									>
+										<Text
+											style={{
+												fontSize: 24
+											}}
+										>
+											Loading
+										</Text>
+									</Animatable.View>
+								) : (
+									<Root />
+								)
+						}
+					</ThemeContext.Provider>
+				</PersistGate>
 			</Provider>
 		);
 	}
 }
-
-
 module.exports = function (store) {
 	App.store = store;
 	return App;
 }
 
-export default App;
+// export default App;
 
 
 /*
+<NavigationContainer>
+								<DrawerNavigator />
+							</NavigationContainer>
+
+
 
 			<Provider store={App.store}>
 				<ThemeContext.Provider value={this.state} >

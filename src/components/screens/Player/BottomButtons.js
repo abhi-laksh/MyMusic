@@ -9,6 +9,7 @@ import { withTheme } from "../../globals/ThemeProvider";
 import { toggleFavourites } from "../../../actions/favourites";
 import ShuffleButton from "./ShuffleButton";
 import RepeatButton from "./RepeatButton";
+import ControlButton from "./ControlButton";
 
 
 const styles = StyleSheet.create({
@@ -40,21 +41,25 @@ class BottomButtons extends React.PureComponent {
     constructor(props) {
         super(props);
         this._toggleFav = this._toggleFav.bind(this);
+        this.goToPL = this.goToPL.bind(this);
+    }
+    goToPL() {
+        this.props.navigation.navigate("Playlist");
     }
     _toggleFav() {
-        this.props.dispatch(toggleFavourites(this.props.currentTrack));
+        this.props.toggleFavourites((this.props.currentTrackId));
     }
-    render() {
-        const { theme, currentTheme, navigation } = this.props;
 
+    render() {
+        const { theme, currentTheme, navigation, disabled, disabledColor } = this.props;
+        /* 
+                TODO : Make Btns Disable
+        */
         const iconColor = (currentTheme.text.primary)
 
         const themeColor = currentTheme.name === "dark"
             ? theme.pallete.primary.main
             : theme.pallete.secondary.main;
-
-        const isFav = (this.props.currentTrack && this.props.currentTrack.id && (this.props.favourites.findIndex((e) => e.id == this.props.currentTrack.id) > -1))
-
 
         return (
             <ViewGradient
@@ -67,12 +72,7 @@ class BottomButtons extends React.PureComponent {
                 // right
                 bottom
             >
-                <RepeatButton
-                    style={styles.drawerButtonList}
-                    iconColor={iconColor}
-                    activeColor={themeColor}
-                />
-                <ShuffleButton
+                <ControlButton
                     style={styles.drawerButtonList}
                     iconColor={iconColor}
                     activeColor={themeColor}
@@ -83,12 +83,13 @@ class BottomButtons extends React.PureComponent {
                     // onPress={() => console.log("LOOP")}
                     activeOpacity={0.5}
                     underlayColor={"transparent"}
+                    disabled={disabled}
                 >
-                    <FontelloIcon name={isFav ? "heart-cross" : "heart"} size={24} color={isFav ? themeColor : iconColor} />
+                    <FontelloIcon name={this.props.isFavourite ? "heart-cross" : "heart"} size={24} color={disabled ? disabledColor : (this.props.isFavourite ? themeColor : iconColor)} />
                 </Button>
                 <Button
                     style={styles.drawerButtonList}
-                    onPress={() => console.log("LOOP")}
+                    onPress={this.goToPL}
                     activeOpacity={0.5}
                     underlayColor={"transparent"}
                 >
@@ -99,18 +100,27 @@ class BottomButtons extends React.PureComponent {
                     onPress={() => navigation.navigate("Lyrics")}
                     activeOpacity={0.5}
                     underlayColor={"transparent"}
+                    disabled={disabled}
                 >
-                    <FontelloIcon name="lyrics" size={24} color={iconColor} />
+                    <FontelloIcon name="lyrics" size={24} color={iconColor} color={disabled ? disabledColor : iconColor} />
                 </Button>
-            </ViewGradient >
+            </ViewGradient>
         )
     }
 }
 
 function mapStateToProps(state) {
-
-    // const isFav = (currentTrack && currentTrack.id && (JSON.stringify(favourites).includes(currentTrack.id)))
-
-    return { currentTrack: state.player.currentTrack, favourites: state.favourites.favourites, controls: state.controls };
+    return {
+        currentTrackId: state.player.currentTrack,
+        isFavourite: state.library.favourites.includes(state.player.currentTrack),
+    };
 }
-export default connect(mapStateToProps)(withTheme(BottomButtons));
+
+
+
+function mapDispatchToProps(dispatch) {
+    return {
+        toggleFavourites: (track) => dispatch(toggleFavourites(track)),
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(withTheme(BottomButtons));

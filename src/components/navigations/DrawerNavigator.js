@@ -1,9 +1,5 @@
 import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import HomeScreen from '../screens/Home/HomeScreen';
-import HomeScreenHeader from '../screens/Home/Header';
-import PlayerScreen from '../screens/Player/PlayerScreen';
-import PlayerScreenHeader from '../screens/Player/Header';
 import {
     HomeStack,
     PlayerStack,
@@ -16,6 +12,7 @@ import {
 } from './StackNavigator';
 import { withTheme } from '../globals/ThemeProvider';
 import MyDrawerContent from './MyDrawerContent';
+import FontelloIcon from '../commons/FontelloIcon';
 
 const Drawer = createDrawerNavigator();
 
@@ -27,7 +24,6 @@ function MyDrawer(props) {
             drawerStyle={{
                 // backgroundColor: currentTheme.background
                 width: "85%",
-
                 borderTopRightRadius: 96,
                 borderBottomRightRadius: 96,
             }}
@@ -35,10 +31,11 @@ function MyDrawer(props) {
             <Drawer.Screen
                 name="Home"
                 component={HomeStack}
+
             />
             <Drawer.Screen
-                name="SongInfo"
-                component={SongInfoStack}
+                name="Player"
+                component={PlayerStack}
                 options={{
                     // gestureEnabled: false,
                 }}
@@ -51,17 +48,36 @@ function MyDrawer(props) {
                 }}
             />
             <Drawer.Screen
-                name="Search"
-                component={SearchStack}
-                options={{
-                    gestureEnabled: false,
-                }}
-            />
-            <Drawer.Screen
                 name="Setting"
                 component={SettingStack}
                 options={{
                     // gestureEnabled: false,
+                    drawerIcon: ({ focused }) => (
+                        <FontelloIcon
+                            color={
+                                focused
+                                    ? theme.pallete.primary.main
+                                    : currentTheme.text.primary
+                            }
+                            size={24}
+                            name="music-box-multiple-outline"
+                        />
+                    )
+                }}
+
+            />
+            <Drawer.Screen
+                name="SongInfo"
+                component={SongInfoStack}
+                options={{
+                    // gestureEnabled: false,
+                }}
+            />
+            <Drawer.Screen
+                name="Search"
+                component={SearchStack}
+                options={{
+                    gestureEnabled: false,
                 }}
             />
             <Drawer.Screen
@@ -74,13 +90,6 @@ function MyDrawer(props) {
             <Drawer.Screen
                 name="Favourites"
                 component={FavouriteStack}
-                options={{
-                    gestureEnabled: false,
-                }}
-            />
-            <Drawer.Screen
-                name="Player"
-                component={PlayerStack}
                 options={{
                     gestureEnabled: false,
                 }}

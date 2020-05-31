@@ -72,9 +72,9 @@ class NewPlaylistModal extends React.PureComponent {
 
     _addToNewPlaylist() {
         const name = this.state.value;
-        const { track } = this.props;
-        if (track) {
-            this.props.addNewPlaylist(name, [track]);
+        const { trackId } = this.props;
+        if (trackId) {
+            this.props.addNewPlaylist(name, [trackId]);
         } else {
             this.props.addNewPlaylist(name);
         }
@@ -82,7 +82,7 @@ class NewPlaylistModal extends React.PureComponent {
     }
 
     _handleInput(val) {
-        console.log(val);
+        // console.log(val);
         this.setState(() => ({ value: val }))
     }
 
@@ -101,7 +101,7 @@ class NewPlaylistModal extends React.PureComponent {
                 setRef={setRef}
                 onModalWillHide={this._resetNewPLInput}
             >
-                <MyAppText
+                <MyAppText 
                     numberOfLines={1}
                     size={18}
                     parentStyle={styles.modalTitle}
@@ -114,7 +114,7 @@ class NewPlaylistModal extends React.PureComponent {
                     autoFocus={true}
                     placeholder={"Enter Playlist Name"}
                     value={this.state.value}
-                    onChangeText={this._handleInput}
+                    onChangeText={this._handleInput} 
                     returnKeyType={"done"}
                     onSubmitEditing={this._addToNewPlaylist}
                 />
@@ -167,7 +167,7 @@ class NewPlaylistModal extends React.PureComponent {
 }
 function mapDispatchToProps(dispatch) {
     return {
-        addNewPlaylist: (name, track) => dispatch(addNewPlaylist(name, track))
+        addNewPlaylist: (name, trackIds) => dispatch(addNewPlaylist(name, trackIds))
     }
 }
 

@@ -22,9 +22,11 @@ class FavouritesScreen extends React.Component {
     render() {
         const { currentTheme, navigation } = this.props;
 
-        const isLast = ((this.props.queue && this.props.currentTrack)
-            && (this.props.queue.findIndex((e) => e.id === this.props.currentTrack.id)) === (this.props.queue.length - 1)
-        )
+        const isLast = ((this.props.queue && this.props.currentTrackId)
+            && this.props.queue.indexOf(this.props.currentTrackId) === this.props.queue.length - 1)
+
+
+        // console.log("FV::", this.props.favourites)
 
         return (
             <View style={{
@@ -36,8 +38,8 @@ class FavouritesScreen extends React.Component {
                         <Loading />
                         :
                         <SongList
-                            tracks={this.props.favourites}
-                            currentTrack={this.props.currentTrack}
+                            trackIds={this.props.favourites}
+                            currentTrackId={(this.props.currentTrackId)}
                         />
                     }
                     <ThemeToggler />
@@ -47,7 +49,9 @@ class FavouritesScreen extends React.Component {
                     navigation={navigation}
                     isPlaying={(this.props.state === TrackPlayer.STATE_PLAYING)}
                     track={this.props.currentTrack}
+                    controlType={this.props.controlType}
                     isLast={isLast}
+                    firstTrack={this.props.queue[0]}
                 />
             </View>
         );
@@ -56,13 +60,11 @@ class FavouritesScreen extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        currentTrack: state.player.currentTrack,
-        tracks: state.library.tracks,
-        favourites: state.favourites.favourites,
-        queue: state.queue.queue,
-        state: state.player.state,
-        fetching: state.library.fetching,
-        error: state.library.error,
+        currentTrack: state.tracks.byId[state.player.currentTrack],
+        currentTrackId: state.player.currentTrack,
+        queue: state.library.queue,
+        favourites: state.library.favourites,
+        tracks: state.tracks,
     };
 }
 

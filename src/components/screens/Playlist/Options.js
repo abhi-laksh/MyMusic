@@ -38,7 +38,7 @@ class Options extends React.PureComponent {
     }
 
     render() {
-        const { theme, currentTheme, PLName, navigation, PLTracks } = this.props;
+        const { theme, currentTheme, playlistId, navigation } = this.props;
 
         const color = currentTheme.text.primary;
 
@@ -46,25 +46,19 @@ class Options extends React.PureComponent {
             <View>
                 <OptionsModal
                     setModal={this.setModal}
-                    PLName={PLName}
+                    playlistId={playlistId}
                     navigation={navigation}
                     onCancel={this._closeModal}
-                    PLTracks={PLTracks}
                 />
                 <Button
                     style={styles.buttons}
                     onPress={this._openModal}
                 >
-                    <FontelloIcon name="menu-dots" size={14} color={color} />
+                    <FontelloIcon name="dots" size={14} color={color} />
                 </Button>
             </View>
         );
     }
 }
 
-function mapStateToProps(state) {
-    return {
-        currentTrack: state.player.currentTrack,
-    };
-}
-export default connect(mapStateToProps)(withTheme(Options));
+export default (withTheme(Options));

@@ -7,8 +7,9 @@ import { withTheme } from "../../globals/ThemeProvider";
 import ViewGradient from "../ViewGradient";
 import SharpBG from "../SharpBG";
 import { connect } from "react-redux";
-import { addTracksToFavourites, removeTracksFromFavourites, toggleFavourites } from "../../../actions/favourites";
+import { toggleFavourites } from "../../../actions/favourites";
 import AsyncStorage from "@react-native-community/async-storage";
+import QueueToggler from "./QueueToggler";
 
 
 
@@ -51,13 +52,13 @@ const styles = StyleSheet.create({
         borderRadius: 24,
         overflow: "hidden",
         padding: 1,
-        zIndex:1,
+        zIndex: 1,
     },
     popChildButtonsView: {
         padding: 0,
         borderRadius: 24,
         overflow: "hidden",
-        zIndex:1,
+        zIndex: 1,
     },
     popButtonSharpBG: {
         borderRadius: 64,
@@ -67,7 +68,7 @@ const styles = StyleSheet.create({
         height: "100%",
         justifyContent: "center",
         alignItems: "center",
-        zIndex:1,
+        zIndex: 1,
     },
 })
 
@@ -75,8 +76,14 @@ class PopsOut extends React.PureComponent {
     constructor(props) {
         super(props);
         this.mode = new Animated.Value(0);
+        this.goToLyrics = this.goToLyrics.bind(this);
+        this.toggleFav = this.toggleFav.bind(this);
+        this.handlePopsOut = this.handlePopsOut.bind(this);
     }
-    handlePopsOut = () => {
+    toggleFav() {
+        this.props.toggleFavourites(this.props.currentTrackId)
+    }
+    handlePopsOut() {
         Animated.sequence([
             Animated.timing(this.mode, {
                 toValue: this.mode._value === 0 ? 1 : 0,
@@ -84,13 +91,13 @@ class PopsOut extends React.PureComponent {
             })
         ]).start();
     }
-
+    goToLyrics() {
+        this.props.navigation.navigate("LyricsScreen");
+    }
     render() {
         const { theme, currentTheme } = this.props;
         const iconColor = currentTheme.text.primary;
         const isFav = this.props.isFavourite;
-
-        // console.log("favourites ", this.props.favourites, this.props.currentTrack);
 
         const themeColor = currentTheme.name === "light" ? theme.pallete.secondary.main : theme.pallete.primary.main
 
@@ -114,7 +121,7 @@ class PopsOut extends React.PureComponent {
             inputRange: [0, 1],
             outputRange: [0.1, 1]
         });
- 
+
         return (
             <View
                 style={styles.mostParent}
@@ -141,7 +148,7 @@ class PopsOut extends React.PureComponent {
                         </Animated.View>
                     </Button>
                 </ViewGradient>
-                
+
                 <Animated.View
                     style={{
                         position: "absolute",
@@ -149,7 +156,7 @@ class PopsOut extends React.PureComponent {
                         left: playlistX,
                         transform: [{ scale: scale }],
                     }}
- 
+
                 >
                     <ViewGradient
                         gradientStyle={[
@@ -160,10 +167,10 @@ class PopsOut extends React.PureComponent {
                     >
                         {/* <SharpBG style={styles.popButtonSharpBG} /> */}
                         <Button
-                            onPress={() => console.log("Button playlist")}
+                            onPress={this.goToLyrics}
                             style={styles.popButton}
                         >
-                            <FontelloIcon name="add-lyrics" size={18} color={iconColor} />
+                            <FontelloIcon name="lyrics" size={18} color={iconColor} />
                         </Button>
                     </ViewGradient>
                 </Animated.View>
@@ -187,11 +194,11 @@ class PopsOut extends React.PureComponent {
                         // colors={[theme.pallete.primary.main, theme.pallete.secondary.light]}
                         /> */}
                         <Button
-                            onPress={() => this.props.dispatch(toggleFavourites(this.props.currentTrack))}
+                            onPress={this.toggleFav}
                             // onPress={() => console.log("Button heart")}
                             style={styles.popButton}
                         >
-                            <FontelloIcon name={isFav ? "heart-cross":"heart"} size={18} color={isFav ? themeColor : iconColor} />
+                            <FontelloIcon name={isFav ? "heart-cross" : "heart"} size={18} color={isFav ? themeColor : iconColor} />
                         </Button>
                     </ViewGradient>
                 </Animated.View>
@@ -203,20 +210,12 @@ class PopsOut extends React.PureComponent {
                         transform: [{ scale: scale }],
                     }}
                 >
-
-                    <ViewGradient
+                    <QueueToggler
                         gradientStyle={styles.popChildButtonsGradient}
                         viewStyle={styles.popChildButtonsView}
-                        onlyBorder
-                    >
-                        {/* <SharpBG style={styles.popButtonSharpBG} /> */}
-                        <Button
-                            onPress={() => console.log("Button close")}
-                            style={styles.popButton}
-                        >
-                            <FontelloIcon name="playlist-plus" size={24} color={iconColor} />
-                        </Button>
-                    </ViewGradient>
+                        buttonStyle={styles.popButton}
+                        iconColor={iconColor}
+                    />
                 </Animated.View>
 
             </View>
@@ -225,16 +224,34 @@ class PopsOut extends React.PureComponent {
 }
 
 function mapStateToProps(state) {
-    const favourites = state.favourites.favourites;
-    const currentTrack = state.player.currentTrack;
-
-
-    const isFav = (currentTrack && currentTrack.id && JSON.stringify(favourites).includes(currentTrack.id))
-
-    return { currentTrack: currentTrack, isFavourite: isFav };
+    let library = state.library;
+    let player = state.player;
+    return {
+        isFavourite: library.favourites && library.favourites.includes(player.currentTrack),
+        currentTrackId: player.currentTrack
+    }
 }
 
-export default connect(mapStateToProps)(withTheme(PopsOut));
+function mapDispatchToProps(dispatch) {
+    return {
+        toggleFavourites: (trackId) => dispatch(toggleFavourites(trackId)),
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withTheme(PopsOut));
 
 /*
+
+                    <ViewGradient
+                        gradientStyle={styles.popChildButtonsGradient}
+                        viewStyle={styles.popChildButtonsView}
+                        onlyBorder
+                    >
+                         <Button
+                            onPress={() => console.log("Button close")}
+                            style={styles.popButton}
+                        >
+                            <FontelloIcon name="playlist-music-outline" size={24} color={iconColor} />
+                        </Button>
+                    </ViewGradient>
 */

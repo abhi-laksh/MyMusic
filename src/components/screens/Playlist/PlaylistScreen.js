@@ -19,48 +19,61 @@ class PlaylistScreen extends React.PureComponent {
     }
 
     _renderItem({ item, index }) {
-        return (
-            <PlaylistCard
-                name={item.name}
-                tracks={item.tracks}
-                createdOn={item.date}
-                navigation={this.props.navigation}
-            />
-        )
+        const eachPL = this.props.playlists && this.props.playlists.byId[item];
+
+        if (eachPL) {
+            return (
+                <PlaylistCard
+                    name={eachPL.name}
+                    tracks={eachPL.tracks}
+                    createdOn={eachPL.date}
+                    id={item}
+                    navigation={this.props.navigation}
+                />
+            )
+        } else {
+            return null;
+        }
     }
 
-    _keyExtracter = (item) => (item.name);
+    _keyExtracter = (item) => (item);
 
     render() {
         const { currentTheme, navigation } = this.props;
-
+        const isLast = ((this.props.queue && this.props.currentTrackId)
+            && this.props.queue.indexOf(this.props.currentTrackId) === this.props.queue.length - 1)
 
         return (
             <View style={{
                 flex: 1,
                 backgroundColor: currentTheme.background,
             }}>
-                {!(this.props.playlists.length > 0) ?
-                    <ErrorPlaylist />
-                    :
-                    <FlatList
-                        contentContainerStyle={{
-                            padding: 16,
-                        }}
-                        columnWrapperStyle={{
-                            justifyContent: "space-between"
-                        }}
-                        data={this.props.playlists.concat()}
-                        renderItem={this._renderItem}
-                        keyExtractor={this._keyExtracter}
-                        numColumns={2}
-                    />
+                {!(this.props.playlists.allIds.length > 0)
+                    ? (
+                        <ErrorPlaylist />
+                    ) : (
+                        <FlatList
+                            contentContainerStyle={{
+                                padding: 16,
+                            }}
+                            columnWrapperStyle={{
+                                justifyContent: "space-between"
+                            }}
+                            data={this.props.playlists.allIds.concat()}
+                            renderItem={this._renderItem}
+                            keyExtractor={this._keyExtracter}
+                            numColumns={2}
+                        />
+                    )
                 }
-                <ThemeToggler />
                 <MiniPlayer
                     navigation={navigation}
                     isPlaying={(this.props.state === TrackPlayer.STATE_PLAYING)}
-                    track={this.props.currentTrack}
+                    track={(this.props.currentTrack)}
+                    isLast={isLast}
+                    controlType={this.props.controlType}
+                    firstTrack={this.props.queue[0]}
+                // playRandomTrack={this.playRandomTrack}
                 />
             </View>
         );
@@ -69,9 +82,12 @@ class PlaylistScreen extends React.PureComponent {
 
 function mapStateToProps(state) {
     return {
-        playlists: state.playlists.playlists,
-        currentTrack: state.player.currentTrack,
-        tracks: state.library.tracks,
+        playlists: state.playlists,
+        currentTrack: state.tracks.byId[state.player.currentTrack],
+        currentTrackId: state.player.currentTrack,
+        controlType: state.player.controlType,
+        queue: state.library.queue,
+        tracks: state.tracks,
         state: state.player.state,
     };
 }

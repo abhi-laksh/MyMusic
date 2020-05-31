@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     }
 })
-function Header({currentTheme, navigation,...props}) {
+function Header({ currentTheme, navigation, ...props }) {
 
     const color = currentTheme.text.primary;
 
@@ -91,15 +91,14 @@ function Header({currentTheme, navigation,...props}) {
                 </Button>
             </ViewGradient>
         </HeaderLayout >
-    ); 
+    );
 }
 
 function mapStateToProps(state) {
-    const currentTrack = state.player.currentTrack;
     return {
         state: state.player.state,
-        track: currentTrack ? currentTrack : null
-    }; 
+        track: state.tracks.byId[state.player.currentTrack]
+    };
 }
 
 

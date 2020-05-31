@@ -14,11 +14,13 @@ class PlaylistTracksScreen extends React.Component {
 
     render() {
         const { currentTheme, navigation, route } = this.props;
-        const { tracks, name, createdOn } = route.params;
+        const { playlistId } = route.params;
+        const tracks = this.props.playlists && this.props.playlists.byId[playlistId] && this.props.playlists.byId[playlistId].tracks;
+        const name = this.props.playlists && this.props.playlists.byId[playlistId] && this.props.playlists.byId[playlistId].name;
+        const date = this.props.playlists && this.props.playlists.byId[playlistId] && this.props.playlists.byId[playlistId].date;
 
 
         return (
-
             (tracks) && (tracks.length > 0)
                 ? (
                     <View style={{
@@ -27,15 +29,23 @@ class PlaylistTracksScreen extends React.Component {
                     }}
                     >
                         <SongList
-                            currentTrack={this.props.currentTrack}
-                            tracks={tracks.concat()}
-                            ListHeaderComponent={<PlaylistDetails navigation={navigation} name={name} tracks={tracks} createdOn={createdOn} />}
+                            currentTrackId={this.props.currentTrackId}
+                            trackIds={tracks.concat()}
+                            ListHeaderComponent={(
+                                <PlaylistDetails
+                                    navigation={navigation}
+                                    playlistId={playlistId}
+                                    name={name}
+                                    tracks={tracks}
+                                    createdOn={date}
+                                />
+                            )}
                             stickyHeaderIndices={[0]}
                         />
                     </View>
                 )
                 : (
-                    <ErrorPlaylistTracks name={name} navigation={navigation} />
+                    <ErrorPlaylistTracks playlistId={playlistId} navigation={navigation} />
                 )
 
         );
@@ -44,7 +54,8 @@ class PlaylistTracksScreen extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        currentTrack: state.player.currentTrack,
+        currentTrackId: state.player.currentTrack,
+        playlists: state.playlists
     };
 }
 export default connect(mapStateToProps)(withTheme(PlaylistTracksScreen));

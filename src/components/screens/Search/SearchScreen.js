@@ -39,8 +39,9 @@ class SearchScreen extends React.Component {
         );
     }
     findTrackFromSearch() {
-        const results = this.props.tracks.filter((item => {
-            return item.title.toLowerCase().match(this.state.searchText.toLowerCase());
+        const results = this.props.tracks.allIds.filter((item => {
+            const track =  this.props.tracks.byId[item];
+            return track && track.title.toLowerCase().match(this.state.searchText.toLowerCase());
         }))
         this.setState(() => ({
             searchResults: results
@@ -59,8 +60,8 @@ class SearchScreen extends React.Component {
                 <Header searchText={this.state.searchText} onSearching={this.onSearching} />
                 <View style={[styles.parent, { backgroundColor: currentTheme.background }]}>
                     <SongList
-                        tracks={this.state.searchText.length > 0 ? this.state.searchResults : []}
-                        currentTrack={currentTrack}
+                        trackIds={this.state.searchText.length > 0 ? this.state.searchResults : []}
+                        currentTrackId={this.props.currentTrackId}
                     />
                 </View>
             </View>
@@ -70,8 +71,8 @@ class SearchScreen extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        currentTrack: state.player.currentTrack,
-        tracks: state.library.tracks,
+        currentTrackId: state.player.currentTrack,
+        tracks: state.tracks,
     };
 }
 

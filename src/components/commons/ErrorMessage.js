@@ -5,12 +5,13 @@ import ViewGradient from "./ViewGradient";
 import MyAppText from "./MyAppText";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import * as Animatable from 'react-native-animatable';
+import FontelloIcon from "./FontelloIcon";
 
 const styles = StyleSheet.create({
     parent: {
         flex: 1,
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
     },
     text: {
         textAlign: "center",
@@ -22,9 +23,26 @@ const styles = StyleSheet.create({
 })
 const msgTypeIcons = {
     default: "comment-alert-outline",
-    track: "file-alert-outline",
-    sync: "sync-alert",
+
+    reload: "reload-alert",
+    restart: "restart-alert",
+    restore: "restore-alert",
     progress: "progress-alert",
+    track: "disc-alert",
+    file: "file-alert",
+    sync: "sync-alert",
+    wifi: "wifi-strength-1-alert",
+    network: "network-strength-1-alert",
+    cloud: "cloud-alert",
+    cloudOutline: "cloud-alert-outline",
+
+    warning: "alert-outline",
+    fileOutline: "file-alert-outline",
+    message: "message-alert-outline",
+    folder: "folder-alert-outline",
+    clipboard: "clipboard-alert-outline",
+    delete: "delete-alert-outline",
+    signal: "signal-off",
 }
 
 const ErrorMessage = ({
@@ -50,7 +68,7 @@ const ErrorMessage = ({
                 style
             ]}
         >
-            <Icon name={iconName} size={iconSize} color={clr} />
+            <FontelloIcon name={iconName} size={iconSize} color={clr} />
             <MyAppText
                 color={clr}
                 parentStyle={styles.textParent}

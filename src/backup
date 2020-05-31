@@ -1,0 +1,212 @@
+import React from 'react';
+import {
+	StatusBar,
+	AppState,
+	View,
+	Text
+} from 'react-native';
+
+import { Provider } from 'react-redux';
+
+import { NavigationContainer, } from '@react-navigation/native';
+
+import { ThemeContext, theme } from './src/components/globals/ThemeProvider';
+
+import AsyncStorage from '@react-native-community/async-storage';
+import DrawerNavigator from './src/components/navigations/DrawerNavigator';
+import * as RNFS from 'react-native-fs';
+import * as Animatable from 'react-native-animatable';
+
+import { request, PERMISSIONS } from 'react-native-permissions';
+
+import { loadTracks, sortMusicList } from './src/constants/utils';
+import { addTracksInBulk } from './src/actions/tracks';
+import { libraryStatus } from './src/actions/library';
+
+class App extends React.Component {
+
+	static store = null;
+
+	constructor(props) {
+		super(props);
+
+		this.toggleTheme = this.toggleTheme.bind(this);
+		this.fetchSavedTheme = this.fetchSavedTheme.bind(this);
+
+		this.state = {
+			currentTheme: theme.light,
+			theme: theme,
+			toggleTheme: this.toggleTheme,
+			fetchingTheme: true,
+			alreadyCheckedFS: false,
+		}
+
+	}
+	toggleTheme() {
+		const newTheme = this.state.currentTheme.name === "light" ? theme.dark : theme.light;
+		AsyncStorage.setItem('currentTheme', JSON.stringify(newTheme)).then(() => {
+			this.setState(() => ({ currentTheme: newTheme }));
+		});
+	}
+
+	_handleStateChange(appState) {
+		if (appState == 'active') {
+			// App.store.dispatch(updatePlayer());
+		}
+	}
+
+	async _syncFromLocalStorage() {
+		try {
+			let data;
+			data = await loadTracks();
+			sortMusicList(data.musicList);
+			return data;
+		} catch (e) {
+			App.store.dispatch(libraryStatus(false, e));
+		};
+	}
+
+
+	logInConsole(desc, msg = "") {
+		console.log(`\n\n${desc.toUpperCase()}:::::::::::::::\n\n${JSON.stringify(msg)}\n\n`);
+	}
+	
+	makeEverythingReady = async () => {
+		try {
+			let appState = await AsyncStorage.getItem('@APP:state');
+			if (appState) {
+				appState = JSON.parse(appState);
+			} else {
+				let data = await this._syncFromLocalStorage();
+				if (data && data.musicList) {
+					App.store.dispatch(addTracksInBulk(data.musicList));
+					await AsyncStorage.setItem('@APP:state')
+				}
+			}
+		} catch (error) {
+			console.warn("makeEverythingReady::: ", error);
+		}
+	}
+
+	fetchSavedTheme = async () => {
+		// await AsyncStorage.clear();
+		const curTheme = await AsyncStorage.getItem('currentTheme');
+
+		if (!curTheme) {
+			console.log("no curTheme");
+
+			const newTheme = this.state.currentTheme;
+
+			AsyncStorage.setItem('currentTheme', JSON.stringify(newTheme));
+
+			this.setState(
+				() => ({
+					fetchingTheme: false
+				}),
+				() => {
+					// App.store.dispatch(initializePlayer());
+					// App.store.dispatch(updatePlayer());
+					this.makeEverythingReady();
+				}
+			)
+		} else {
+			const value = JSON.parse(curTheme)
+			this.setState(
+				() => ({
+					fetchingTheme: false,
+					currentTheme: value,
+				}),
+				() => {
+					// App.store.dispatch(initializePlayer());
+					// App.store.dispatch(updatePlayer());
+					this.makeEverythingReady();
+				}
+			);
+		}
+	}
+
+	componentDidMount() {
+		AppState.addEventListener('change', this._handleStateChange);
+
+		request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE).then((result) => {
+			if (result == "granted") {
+				// AsyncStorage.clear();
+				this.fetchSavedTheme();
+			}
+		})
+
+		// .then(() => {
+		// 	App.store.dispatch(initializePlayer());
+		// 	App.store.dispatch(updatePlayer());
+		// 	this.makeEverythingReady()
+		// });
+
+	}
+
+	componentWillUnmount() {
+		AppState.removeEventListener('change', this._handleStateChange);
+	}
+
+	render() {
+		// this.logInConsole("APPP JSS LOADS")
+		return (
+			<Provider store={App.store}>
+				<ThemeContext.Provider value={this.state} >
+					<StatusBar backgroundColor={this.state.currentTheme.background} barStyle={this.state.currentTheme.name === "light" ? "dark-content" : "light-content"} />
+					{this.state.fetchingTheme
+						? (
+							<Animatable.View
+								style={{
+									flex: 1,
+									justifyContent: "center",
+									alignItems: "center",
+								}}
+								animation={'fadeInUp'}
+							// duration={1000}
+
+							>
+								<Text
+									style={{
+										fontSize: 24
+									}}
+								>
+									Loading
+							</Text>
+							</Animatable.View>
+						)
+						: (
+							<View>
+								<Text>DONE {JSON.stringify(App.store.getState().tracks)}</Text>
+							</View>
+						)}
+				</ThemeContext.Provider>
+			</Provider>
+		);
+	}
+}
+
+
+module.exports = function (store) {
+	App.store = store;
+	return App;
+}
+
+export default App;
+
+
+/*
+<NavigationContainer>
+								<DrawerNavigator />
+							</NavigationContainer>
+
+
+
+			<Provider store={App.store}>
+				<ThemeContext.Provider value={this.state} >
+					<StatusBar backgroundColor={this.state.currentTheme.background} barStyle={this.state.currentTheme.name === "light" ? "dark-content" : "light-content"} />
+					<NavigationContainer>
+						<DrawerNavigator />
+					</NavigationContainer>
+				</ThemeContext.Provider>
+			</Provider>
+*/

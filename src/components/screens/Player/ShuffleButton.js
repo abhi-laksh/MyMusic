@@ -67,7 +67,7 @@ const ShuffleButton = ({ style, size = 24, iconColor, tracks,activeColor, contro
     }
 }*/
 
-function mapStateToProps(state) {
+function mapStateToProps(state) { 
     return {
         currentTrack: state.player.currentTrack,
         tracks: state.library.tracks,

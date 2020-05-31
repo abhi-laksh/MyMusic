@@ -60,7 +60,7 @@ class ErrorPlaylistTracks extends React.PureComponent {
     }
 
     render() {
-        const { currentTheme, navigation, name } = this.props;
+        const { currentTheme, navigation, playlistId } = this.props;
 
         const currentColor = currentTheme.text.primary;
 
@@ -84,7 +84,7 @@ class ErrorPlaylistTracks extends React.PureComponent {
                 <TrackListModal
                     setModalRef={this.setModalRef}
                     onCancel={this.closeModal}
-                    name={name}
+                    playlistId={playlistId}
                     navigation={navigation}
                 />
                 <Button
@@ -102,8 +102,8 @@ class ErrorPlaylistTracks extends React.PureComponent {
                             style={styles.textCenter}
                             color={"#fff"}
                             >
-                            <FontelloIcon
-                                name="add-playlist"
+                            <FontelloIcon 
+                                name="add-music"
                                 size={24}
                                 color={"#fff"}
                             /> Add Song

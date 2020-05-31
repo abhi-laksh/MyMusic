@@ -33,10 +33,7 @@ const styles = StyleSheet.create({
 function Header(props) {
 
     const { currentTheme, navigation, scene } = props;
-
-    const PLName = scene.route.params ? scene.route.params.name : null;
-    const PLTracks = scene.route.params ? scene.route.params.tracks : null;
-
+    
     const color = currentTheme.text.primary;
 
     return (
