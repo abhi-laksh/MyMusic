@@ -226,6 +226,9 @@ export function deleteTracks(trackId) {
 
 export function modifyMetadata(trackId, newTrackInfo) {
     return async (dispatch, getState) => {
+
+        await TrackPlayer.updateMetadataForTrack(trackId, newTrackInfo);
+
         dispatch({
             type: MODIFY_TRACKS,
             trackId,

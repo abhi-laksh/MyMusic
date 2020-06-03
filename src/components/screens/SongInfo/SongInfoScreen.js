@@ -6,6 +6,7 @@ import ViewGradient from '../../commons/ViewGradient';
 import InfoRow from './InfoRow';
 import { TextInput } from 'react-native-gesture-handler';
 import Input from '../../commons/Input';
+import { formatTime } from '../../../constants/utils';
 
 const styles = StyleSheet.create({
     parent: {
@@ -45,7 +46,7 @@ const SongInfoScreen = ({ currentTheme, theme, route, ...props }) => {
     const handleInput = (name) => (value) => {
         setValues({ ...values, [name]: value });
     }
-    
+    const duration = formatTime(track.duration);
     return (
         <View style={[styles.parent, { backgroundColor: currentTheme.background }]}>
             <InfoRow
@@ -116,7 +117,27 @@ const SongInfoScreen = ({ currentTheme, theme, route, ...props }) => {
                     selectTextOnFocus={true}
                     // autoFocus={true}
                     // placeholder={"Enter Playlist Name"}
-                    value={String(track.size)}
+                    value={`${String(parseFloat(((track.size / 1024)) / 1024).toFixed(2))} MB`}
+                    // onChangeText={handleInput("title")}
+                    returnKeyType={"done"}
+                    readOnly
+                    multiline
+                // disabled
+
+                />
+            </InfoRow>
+            <InfoRow
+                contrast={contrast}
+                currentTheme={currentTheme}
+                label={"duration"}
+            >
+                <Input
+                    gradientStyle={styles.fullFlex}
+                    viewStyle={styles.autoHeight}
+                    selectTextOnFocus={true}
+                    // autoFocus={true}
+                    // placeholder={"Enter Playlist Name"}
+                    value={`${duration.mm} : ${duration.ss}`}
                     // onChangeText={handleInput("title")}
                     returnKeyType={"done"}
                     readOnly

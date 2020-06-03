@@ -23,12 +23,11 @@ import TrackPlayer from 'react-native-track-player';
 
 import DrawerNavigator from "./components/navigations/DrawerNavigator";
 import Loading from './components/commons/Loading';
+import { initializePlayer } from './actions/player';
 class Root extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-			alreadySynced: false,
-		}
+		this._mounted = false;
 	}
 
 	_syncFromLocalStorage = async () => {
@@ -48,8 +47,8 @@ class Root extends React.Component {
 	}
 	updateTracksInStore = async () => {
 		try {
-			await this.props.addMultipleInQueue(this.props.queue);
 			this.props.libraryStatus(this.props.newLoad, true, null);
+			await this.props.addMultipleInQueue(this.props.queue);
 			let data = await this._syncFromLocalStorage();
 			if (data && data.musicList) {
 				await this.props.syncTracksInState(data.musicList);
@@ -68,18 +67,18 @@ class Root extends React.Component {
 			} else {
 				this.props.libraryStatus(false, false, e);
 			}
-			this.props.libraryStatus(false, error);
 			console.warn("updateTracksInStore::: ", error);
 		}
 	}
 
 	componentDidMount() {
-		if (!this.state.alreadySynced) {
-			this.updateTracksInStore();
-		}
+		this.props.initializePlayer() && this.updateTracksInStore();
 	}
+	componentWillUnmount() {
+		this._mounted = false;
+	}
+
 	render() {
-		// console.log("ROOT:::", this.props.tracks)
 		return (
 			<NavigationContainer >
 				<DrawerNavigator />
@@ -102,6 +101,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
 	return {
 		libraryStatus: (newLoad, fetching, error) => dispatch(libraryStatus(newLoad, fetching, error)),
+		initializePlayer: () => dispatch(initializePlayer()),
 		syncTracksInState: (tracks) => dispatch(syncTracksInState(tracks)),
 		addMultipleInQueue: (tracks) => dispatch(addMultipleToQueue(tracks)),
 	}

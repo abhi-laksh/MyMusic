@@ -79,7 +79,7 @@ class SongRow extends React.Component {
         const activeColor = currentTheme.name === "dark"
             ? theme.pallete.primary.light : theme.pallete.secondary.main;
         const color = currentTheme.text.primary;
-
+        // .replace(/[\*\-_\(\)\[\]\{\}\&\,\ ]/g," ")
         return (
             <View
                 style={styles.parent}
@@ -99,8 +99,8 @@ class SongRow extends React.Component {
                         >
                             <Thumbnail size={50} scale={"50%"} source={songImage} />
                             <SongInfo
-                                songName={songName.replace(/[\*\-_\(\)\[\]\{\}\&\,\ ]/g," ")}
-                                songAuthor={songAuthor.replace(/[\*\-_\(\)\[\]\{\}\&\,\ ]/g,"")}
+                                songName={songName}
+                                songAuthor={songAuthor}
                                 isActive={isActive}
                                 activeColor={activeColor}
                             />

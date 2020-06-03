@@ -123,6 +123,15 @@ class SongProgressBar extends ProgressComponent {
 			this.state.slideProgress * this.state.duration,
 		);
 
+		if (
+			(this.props.controlType === "loop-one")
+			&& (this.props.playerState === TrackPlayer.STATE_PLAYING)
+			&& (parseInt(this.state.position) == parseInt(this.state.duration))
+		) {
+			TrackPlayer.seekTo(0);
+		}
+
+
 		// console.log("duration : ", this.state.duration, "| progressTimer :", this.state.position);
 
 		return (
@@ -175,6 +184,7 @@ class SongProgressBar extends ProgressComponent {
 function mapStateToProps(state) {
 	return {
 		playerState: state.player.state,
+		controlType: state.player.controlType,
 		currentTrackId: state.player.currentTrack,
 	};
 }

@@ -104,7 +104,7 @@ class QueueModal extends React.PureComponent {
                                             height: 36,
                                             alignItems: "center",
                                             justifyContent: "center",
-                                            backgroundColor: "#66a",
+                                            // backgroundColor: "#66a",
                                             alignSelf: "center",
                                             marginRight: 16,
                                         }}

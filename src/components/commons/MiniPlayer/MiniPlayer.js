@@ -76,10 +76,9 @@ class MiniPlayer extends React.Component {
             }
         }
     }
-
     render() {
+
         const { navigation } = this.props
-        // console.log("Miniplayer", this.props.controlType);
         return (
             <ViewGradient
                 gradientStyle={styles.parentGradientStyle}
@@ -94,8 +93,8 @@ class MiniPlayer extends React.Component {
                 >
                     <CurrentSong
                         onPress={() => navigation.navigate('Player')}
-                        songName={this.props.currentTrack ? this.props.currentTrack.title : "Unknown Title"}
-                        songAuthor={this.props.currentTrack ? this.props.currentTrack.artist : "Unknown Artist"}
+                        songName={this.props.currentTrack && this.props.currentTrack.title}
+                        songAuthor={this.props.currentTrack && this.props.currentTrack.artist}
                     />
                 </View>
 
@@ -125,6 +124,7 @@ class MiniPlayer extends React.Component {
 function mapStateToProps(state) {
     return {
         currentTrack: state.tracks.byId[state.player.currentTrack],
+        // currentTrack: state.tracks.byId[state.player.currentTrack],
         queue: state.library.queue,
         playlists: state.playlists,
         controlType: state.player.controlType,

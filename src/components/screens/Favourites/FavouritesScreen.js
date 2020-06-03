@@ -42,7 +42,6 @@ class FavouritesScreen extends React.Component {
                             currentTrackId={(this.props.currentTrackId)}
                         />
                     }
-                    <ThemeToggler />
                 </CommonBG>
 
                 <MiniPlayer

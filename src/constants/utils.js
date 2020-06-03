@@ -73,8 +73,9 @@ export function formatTime(seconds) {
     const hh = Math.floor(ms / 3600);
 
     if (hh > 0) {
-        return hh + ':' + formatTwoDigits(mm) + ':' + formatTwoDigits(ss);
+        return { hh: hh, mm: (formatTwoDigits(mm)), ss: (formatTwoDigits(ss)) };
+        // return hh + ':' + formatTwoDigits(mm) + ':' + formatTwoDigits(ss);
     } else {
-        return mm + ':' + formatTwoDigits(ss);
+        return { hh: undefined, mm: formatTwoDigits(mm), ss: (formatTwoDigits(ss)) };
     }
 }

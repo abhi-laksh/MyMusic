@@ -126,46 +126,29 @@ function MyDrawerContent(props) {
                         }
                     ]}
                 >
-                    {/* <DrawerItemList
-                    {...props}
-                    itemStyle={
-                        {
-                            marginTop: 8,
-                            paddingHorizontal: 16,
-                        }
-                    }
-                    icon={() => <Icon name="home" color={currentTheme.text.primary} />}
-                    labelStyle={[
-                        fontSettings,
-                    ]}
-                    activeBackgroundColor={contrast}
-                    activeTintColor={colorForTheme}
-                    inactiveTintColor={currentTheme.text.primary}
-
-                /> */}
-
-                    {routes.map(function (e) {
-                        return (
-                            <DrawerItem
-                                label={e.name}
-                                key={e.key}
-                                labelStyle={[
-                                    fontSettings,
-                                ]}
-                                activeBackgroundColor={contrast}
-                                activeTintColor={colorForTheme}
-                                inactiveTintColor={color}
-                                style={{
-                                    marginTop: 8,
-                                    paddingHorizontal: 16,
-                                    borderWidth: 1,
-                                    borderColor: descriptors[e.key].navigation.isFocused() ? colorForTheme : "transparent"
-                                }}
-                                onPress={() => navigation.navigate(e.name)}
-                                focused={descriptors[e.key].navigation.isFocused()}
-                            />
-                        )
-                    })
+                    {
+                        routes.map(function (e) {
+                            return (
+                                <DrawerItem
+                                    label={e.name}
+                                    key={e.key}
+                                    labelStyle={[
+                                        fontSettings,
+                                    ]}
+                                    activeBackgroundColor={contrast}
+                                    activeTintColor={colorForTheme}
+                                    inactiveTintColor={color}
+                                    style={{
+                                        marginTop: 8,
+                                        paddingHorizontal: 16,
+                                        borderWidth: 1,
+                                        borderColor: descriptors[e.key].navigation.isFocused() ? colorForTheme : "transparent"
+                                    }}
+                                    onPress={() => navigation.navigate(e.name)}
+                                    focused={descriptors[e.key].navigation.isFocused()}
+                                />
+                            )
+                        })
                     }
                 </DrawerContentScrollView>
             </CommonBG>

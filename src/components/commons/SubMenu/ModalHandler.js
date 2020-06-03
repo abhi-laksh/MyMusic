@@ -114,7 +114,7 @@ class ModalHandler extends React.PureComponent {
         const navigation = this.context;
         const { track } = this.props;
         this.closeMainModel();
-        console.log(track)
+        // console.log(track)
         navigation.navigate("SongInfo", {
             screen: "SongInfoScreen",
             params: {
@@ -155,6 +155,7 @@ class ModalHandler extends React.PureComponent {
         /* 
             TODO : bug solve in add/remove queue,
         */
+
         return (
             <View
                 ref={this.setThisRef}
@@ -230,6 +231,7 @@ class ModalHandler extends React.PureComponent {
                         onPress={this._handleOnPressQueue}
                         // onPress={() => console.log(isInQueue)}
                         style={styles.modalButtons}
+                        disabled={(isInQueue && this.props.queue && this.props.queue.length <= 1)}
                     >
                         <View style={styles.buttonView}>
                             <FontelloIcon name={"add-queue"} color={color} size={18} />
@@ -240,23 +242,6 @@ class ModalHandler extends React.PureComponent {
                                 numberOfLines={1}
                             >
                                 {`${!isInQueue ? "Add To" : "Remove From"} Queue`}
-                            </MyAppText>
-                        </View>
-                    </Button>
-
-                    <Button
-                        onPress={() => console.log("Delete")}
-                        style={styles.modalButtons}
-                    >
-                        <View style={styles.buttonView}>
-                            <FontelloIcon name={"delete-outline"} color={color} size={20} />
-                            <MyAppText
-                                parentStyle={styles.buttonTextParent}
-                                style={styles.buttonText}
-
-                                numberOfLines={1}
-                            >
-                                Delete
                             </MyAppText>
                         </View>
                     </Button>
@@ -332,6 +317,7 @@ function mapDispatchToProps(dispatch) {
     return {
         addToQueue: (trackId) => dispatch(addToQueue(trackId)),
         removeFromQueue: (trackId) => dispatch(removeFromQueue(trackId)),
+        toggleFavourites: (trackId) => dispatch(toggleFavourites(trackId)),
     }
 }
 

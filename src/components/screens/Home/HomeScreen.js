@@ -18,6 +18,7 @@ class HomeScreen extends React.PureComponent {
     }
     render() {
         const { currentTheme, navigation } = this.props;
+
         return (
             <View style={{
                 flex: 1,

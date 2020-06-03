@@ -88,7 +88,16 @@ async function eventHandler(store, data) {
 
 	TrackPlayer.addEventListener('playback-track-changed', data => {
 		// let newTrack = await TrackPlayer.getTrack(data.nextTrack);
+		// const state = store.getState();
+		// const { player } = state;
+		// if (player && player.controlType == "loop-one" && player.state === TrackPlayer.STATE_PLAYING) {
+		// 	TrackPlayer.seekTo(0);
+		// } else {
+		// 	store.dispatch(playerTrack(data.nextTrack));
+		// }
+
 		store.dispatch(playerTrack(data.nextTrack));
+
 	});
 
 	TrackPlayer.addEventListener('playback-error', data => {
@@ -100,7 +109,7 @@ async function eventHandler(store, data) {
 		const state = store.getState();
 		const { player, library, tracks } = state;
 
-		if (player.controlType === "loop-one") {
+		if (player.controlType == "loop-one") {
 			await TrackPlayer.seekTo(0);
 		} else {
 			if (player.state === TrackPlayer.STATE_PLAYING) {

@@ -91,19 +91,13 @@ function modifyMetadata(state, action) {
 
     const track = state[trackId];
 
-    const { title,
-        url,
-        dirPath,
-        album,
-        artist } = newTrackInfo;
+    const { title, album, artist } = newTrackInfo;
 
     return {
         ...state,
         [trackId]: {
             ...track,
             title,
-            url,
-            dirPath,
             album,
             artist,
         }

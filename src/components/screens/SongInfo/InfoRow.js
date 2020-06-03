@@ -8,6 +8,7 @@ const InfoRow = ({ currentTheme, contrast, label, children, ...props }) => {
             style={{
                 flexDirection: "row",
                 marginVertical: 8,
+                alignItems:"center"
             }}
         >
             <MyAppText
@@ -15,7 +16,7 @@ const InfoRow = ({ currentTheme, contrast, label, children, ...props }) => {
                     paddingVertical: 10,
                     paddingHorizontal: 0,
                     // backgroundColor: "#666",
-                    flex: 0.3,
+                    flex: 0.35,
                 }}
                 style={{
                     // flex: 0,

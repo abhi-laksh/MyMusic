@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
 });
 
 function CurrentSong(props) {
-    const { theme, songName, songAuthor, currentTheme, songImage, onPress, ...others } = props;
+    const { theme, songName="Unknown Title", songAuthor="Unknown Artist", currentTheme, songImage, onPress, ...others } = props;
     return (
         <Button
             style={styles.fullheight}

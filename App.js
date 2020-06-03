@@ -27,7 +27,6 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { persistor } from './src/store/configStore';
 
 
-// const store = createStore(reducers, applyMiddleware(thunkMiddleware));
 
 class App extends React.Component {
 
@@ -58,7 +57,7 @@ class App extends React.Component {
 		}
 	}
 
-	makeAppReady = async () => {
+	async makeAppReady() {
 		const curTheme = await AsyncStorage.getItem('@APP:theme');
 		if (
 			(!curTheme || !curTheme.length)
@@ -66,38 +65,31 @@ class App extends React.Component {
 			console.log("no curTheme");
 			const newTheme = this.state.currentTheme;
 			AsyncStorage.setItem('@APP:theme', JSON.stringify(newTheme));
-			// AsyncStorage.setItem('@APP:state', JSON.stringify(App.store.getState()));
+
 			this.setState(
 				() => ({
 					isReady: true
-				}),
-				() => {
-					App.store.dispatch(initializePlayer());
-					App.store.dispatch(updatePlayer());
-				}
+				})
 			)
 		} else {
 			const getTheme = JSON.parse(curTheme);
-			let tracks = App.store && App.store.getState() && App.store.getState().library && App.store.getState().library.queue;
-			// console.log("APP::::", tracks);
+			let tracks = App.store && App.store.getState() && App.store.getState().player && App.store.getState().player.currentTrack;
+			console.log("APP::::", tracks);
 			this.setState(
 				() => ({
 					isReady: true,
 					currentTheme: getTheme,
-				}),
-				() => {
-					App.store.dispatch(initializePlayer());
-					App.store.dispatch(updatePlayer());
-				}
+				})
 			);
 
 		}
 	}
-	flush =async () => {
+
+	flush = async () => {
 		await persistor.purge();
 	}
 	componentDidMount() {
-		// this.flush();
+		// this.flush(); 
 		AppState.addEventListener('change', this._handleStateChange);
 		request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE).then((result) => {
 			if (result == "granted") {
@@ -114,24 +106,27 @@ class App extends React.Component {
 		const { isReady, tracks, ...others } = this.state;
 		return (
 			<Provider store={App.store}>
-				<PersistGate loading={(
-					<Animatable.View
-						style={{
-							flex: 1,
-							justifyContent: "center",
-							alignItems: "center",
-						}}
-						animation={'fadeInUp'}
-					>
-						<Text
+				<PersistGate
+					loading={(
+						<Animatable.View
 							style={{
-								fontSize: 24
+								flex: 1,
+								justifyContent: "center",
+								alignItems: "center",
 							}}
+							animation={'fadeInUp'}
 						>
-							Loading
-								</Text>
-					</Animatable.View>
-				)} persistor={persistor}>
+							<Text
+								style={{
+									fontSize: 24
+								}}
+							>
+								Loading
+						</Text>
+						</Animatable.View>
+					)}
+					persistor={persistor}
+				>
 					<ThemeContext.Provider value={others} >
 						<StatusBar backgroundColor={this.state.currentTheme.background} barStyle={this.state.currentTheme.name === "light" ? "dark-content" : "light-content"} />
 						{
