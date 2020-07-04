@@ -19,7 +19,6 @@ import LyricsScreen from '../screens/Lyrics/LyricsScreen';
 import LyricsEditScreen from '../screens/Lyrics/LyricsEditScreen';
 import LyricsAddScreen from '../screens/Lyrics/LyricsAddScreen';
 
-import SettingScreen from '../screens/Settings/SettingScreen';
 
 import SearchScreen from '../screens/Search/SearchScreen';
 import SearchScreenHeader from '../screens/Search/Header';
@@ -169,20 +168,6 @@ export const SearchStack = () => (
         }
             name="SearchScreen"
             component={SearchScreen}
-        />
-    </Stack.Navigator>
-)
-
-export const SettingStack = () => (
-    <Stack.Navigator
-    >
-        <Stack.Screen options={
-            {
-                header: ({ navigation, scene }) => (null),
-            }
-        }
-            name="SettingScreen"
-            component={SettingScreen}
         />
     </Stack.Navigator>
 )

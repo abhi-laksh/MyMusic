@@ -62,7 +62,6 @@ class App extends React.Component {
 		if (
 			(!curTheme || !curTheme.length)
 		) {
-			console.log("no curTheme");
 			const newTheme = this.state.currentTheme;
 			AsyncStorage.setItem('@APP:theme', JSON.stringify(newTheme));
 
@@ -73,8 +72,6 @@ class App extends React.Component {
 			)
 		} else {
 			const getTheme = JSON.parse(curTheme);
-			let tracks = App.store && App.store.getState() && App.store.getState().player && App.store.getState().player.currentTrack;
-			console.log("APP::::", tracks);
 			this.setState(
 				() => ({
 					isReady: true,

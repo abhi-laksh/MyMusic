@@ -16,17 +16,14 @@ class FavouritesScreen extends React.Component {
     constructor(props) {
         super(props);
     }
-    componentDidMount() {
-        this.props.addAllToQueue(this.props.favourites)
-    }
     render() {
         const { currentTheme, navigation } = this.props;
+        console.log();
+        console.log("FAV::", this.props.favourites);
+        console.log();
 
         const isLast = ((this.props.queue && this.props.currentTrackId)
             && this.props.queue.indexOf(this.props.currentTrackId) === this.props.queue.length - 1)
-
-
-        // console.log("FV::", this.props.favourites)
 
         return (
             <View style={{
@@ -58,6 +55,10 @@ class FavouritesScreen extends React.Component {
 }
 
 function mapStateToProps(state) {
+    
+    console.log();
+    console.log("FAV mapStateToProps ::", state.library.favourites);
+    console.log();
     return {
         currentTrack: state.tracks.byId[state.player.currentTrack],
         currentTrackId: state.player.currentTrack,
@@ -74,4 +75,4 @@ function mapDispatchToProps(dispatch) {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTheme(FavouritesScreen));
+export default connect(mapStateToProps, null)(withTheme(FavouritesScreen));

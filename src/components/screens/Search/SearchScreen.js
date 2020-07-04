@@ -50,7 +50,6 @@ class SearchScreen extends React.Component {
 
 
     render() {
-        // console.log("SEARCH SCREEN:::", this.state.searchText, this.state.searchResults)
         const { currentTheme, navigation, tracks, currentTrack } = this.props
         return (
             <View style={{

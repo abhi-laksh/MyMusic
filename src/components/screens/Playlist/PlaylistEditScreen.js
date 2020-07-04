@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, BackHandler } from "react-native";
 import { connect } from "react-redux";
 
 import MyAppText from "../../commons/MyAppText";
@@ -46,6 +46,7 @@ const styles = StyleSheet.create({
 })
 
 class PlaylistEditScreen extends React.Component {
+
     constructor(props) {
         super(props);
 
@@ -64,7 +65,6 @@ class PlaylistEditScreen extends React.Component {
     }
 
     _handleInput(val) {
-        // console.log(val);
         this.setState(() => ({ value: val }))
     }
 
@@ -95,15 +95,19 @@ class PlaylistEditScreen extends React.Component {
     }
 
     componentDidMount() {
-        if (this.props.playlists
+        if (
+            this.props.playlists
             && this.props.playlists.byId
             && (this.props.route.params && this.props.route.params.playlistId)
         ) {
-            const { name } = this.props.playlists.byId[this.props.route.params.playlistId]
+            const { name } = this.props.playlists.byId[this.props.route.params.playlistId];
+
             this.setState(() => ({
                 value: name,
             }));
+
         }
+
     }
 
     render() {
@@ -131,7 +135,6 @@ class PlaylistEditScreen extends React.Component {
                     style={styles.buttonGroupParent}
                 >
                     <Button
-                        // onPress={() => console.log("HIII")}
                         onPress={this._cancel}
                         style={[styles.buttonCancel, { borderColor: contrast }]}
                     >

@@ -60,7 +60,6 @@ class TrackListModal extends React.Component {
         const prevItems = this.state.addedTracks.concat();
         prevItems.push(track);
         this.setState(() => ({ addedTracks: prevItems }));
-        // console.log("ADDED", this.state.addedTracks)
     }
 
     _renderSideComponent(props) {

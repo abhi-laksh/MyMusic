@@ -12,7 +12,7 @@ const persistConfig = {
     writeFailHandler: function (err) {
         console.log("writeFailHandler::::", err);
     },
-    stateReconciler:autoMergeLevel2
+    // stateReconciler:autoMergeLevel2
 }
 const persistedReducer = persistReducer(persistConfig, reducers);
 export const store = createStore(persistedReducer, applyMiddleware(thunkMiddleware));

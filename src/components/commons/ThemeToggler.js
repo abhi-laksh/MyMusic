@@ -89,12 +89,10 @@ class ThemeToggler extends React.PureComponent {
     toggleAnimation(isDark, next = () => { }) {
         return () => {
             if (isDark) {
-                console.log("In")
                 this.refDay.animate(this.zoomIn);
                 this.refNight.animate(this.zoomOut);
                 next();
             } else {
-                console.log("OUT")
                 this.refDay.animate(this.zoomOut);
                 this.refNight.animate(this.zoomIn);
                 next();

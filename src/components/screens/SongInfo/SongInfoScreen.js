@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, BackHandler } from 'react-native';
 import { withTheme } from '../../globals/ThemeProvider';
 import MyAppText from '../../commons/MyAppText';
 import ViewGradient from '../../commons/ViewGradient';
@@ -22,13 +22,14 @@ const styles = StyleSheet.create({
     },
 });
 
-const SongInfoScreen = ({ currentTheme, theme, route, ...props }) => {
+const SongInfoScreen = ({ currentTheme, theme, route, navigation, ...props }) => {
 
     const contrast = currentTheme.name === "dark" ?
         theme.lightenDarken(0.5, theme.hexToRGB(currentTheme.background))
         : theme.lightenDarken(0.2, theme.hexToRGB(currentTheme.text.primary));
 
     const { params } = route;
+
     const track = (params && params.track) || ({
         title: "",
         album: "",
@@ -36,17 +37,25 @@ const SongInfoScreen = ({ currentTheme, theme, route, ...props }) => {
         size: "",
         path: "",
     });
-    const [values, setValues] = useState({
-        title: track.title,
-        album: track.album,
-        artist: track.artist,
-        size: track.size,
-        path: track.dirPath,
-    })
-    const handleInput = (name) => (value) => {
-        setValues({ ...values, [name]: value });
+
+    // Manually go back as nested stack doesnt remember Drawer Nav Item
+    const goBackHome = () => {
+        // console.log();
+        // console.log("NAV", navigation, navigation.state, (navigation.state && navigation.state.key));
+        // console.log();
+        navigation.navigate("Home")
+        return true;
     }
+
+    useEffect(() => {
+        BackHandler.addEventListener("hardwareBackPress", goBackHome);
+        return () => {
+            BackHandler.removeEventListener("hardwareBackPress", goBackHome);
+        }
+    })
+
     const duration = formatTime(track.duration);
+
     return (
         <View style={[styles.parent, { backgroundColor: currentTheme.background }]}>
             <InfoRow
@@ -58,10 +67,7 @@ const SongInfoScreen = ({ currentTheme, theme, route, ...props }) => {
                     gradientStyle={styles.fullFlex}
                     viewStyle={styles.autoHeight}
                     selectTextOnFocus={true}
-                    // autoFocus={true}
-                    // placeholder={"Enter Playlist Name"}
                     value={track.title}
-                    // onChangeText={handleInput("title")}
                     returnKeyType={"done"}
                     readOnly
                     multiline
@@ -77,10 +83,7 @@ const SongInfoScreen = ({ currentTheme, theme, route, ...props }) => {
                     gradientStyle={styles.fullFlex}
                     viewStyle={styles.autoHeight}
                     selectTextOnFocus={true}
-                    // autoFocus={true}
-                    // placeholder={"Enter Playlist Name"}
                     value={track.album}
-                    // onChangeText={handleInput("title")}
                     returnKeyType={"done"}
                     readOnly
                     multiline
@@ -96,10 +99,7 @@ const SongInfoScreen = ({ currentTheme, theme, route, ...props }) => {
                     gradientStyle={styles.fullFlex}
                     viewStyle={styles.autoHeight}
                     selectTextOnFocus={true}
-                    // autoFocus={true}
-                    // placeholder={"Enter Playlist Name"}
                     value={track.artist}
-                    // onChangeText={handleInput("title")}
                     returnKeyType={"done"}
                     readOnly
                     multiline
@@ -115,15 +115,10 @@ const SongInfoScreen = ({ currentTheme, theme, route, ...props }) => {
                     gradientStyle={styles.fullFlex}
                     viewStyle={styles.autoHeight}
                     selectTextOnFocus={true}
-                    // autoFocus={true}
-                    // placeholder={"Enter Playlist Name"}
                     value={`${String(parseFloat(((track.size / 1024)) / 1024).toFixed(2))} MB`}
-                    // onChangeText={handleInput("title")}
                     returnKeyType={"done"}
                     readOnly
                     multiline
-                // disabled
-
                 />
             </InfoRow>
             <InfoRow
@@ -135,15 +130,10 @@ const SongInfoScreen = ({ currentTheme, theme, route, ...props }) => {
                     gradientStyle={styles.fullFlex}
                     viewStyle={styles.autoHeight}
                     selectTextOnFocus={true}
-                    // autoFocus={true}
-                    // placeholder={"Enter Playlist Name"}
                     value={`${duration.mm} : ${duration.ss}`}
-                    // onChangeText={handleInput("title")}
                     returnKeyType={"done"}
                     readOnly
                     multiline
-                // disabled
-
                 />
             </InfoRow>
             <InfoRow
@@ -155,12 +145,8 @@ const SongInfoScreen = ({ currentTheme, theme, route, ...props }) => {
                     gradientStyle={styles.fullFlex}
                     viewStyle={styles.autoHeight}
                     selectTextOnFocus={true}
-                    // autoFocus={true}
-                    // placeholder={"Enter Playlist Name"}
                     value={track.dirPath}
-                    // onChangeText={handleInput("title")}
                     returnKeyType={"done"}
-                    // disabled
                     readOnly
                     multiline
                 />
@@ -170,21 +156,3 @@ const SongInfoScreen = ({ currentTheme, theme, route, ...props }) => {
 };
 
 export default withTheme(SongInfoScreen);
-/*
-
-                <MyAppText
-                    parentStyle={{
-                        // paddingVertical: 10,
-                        // paddingHorizontal: 0,
-                        // backgroundColor: "#666",
-                        // flex: 0,
-                    }}
-                    style={{
-                        flex: 0,
-                        textTransform: "capitalize",
-                    }}
-                    size={16}
-                >
-                    Song Name
-                </MyAppText>
-*/

@@ -21,17 +21,7 @@ class SongList extends React.PureComponent {
         this._renderItem = this._renderItem.bind(this);
         this._keyExtracter = this._keyExtracter.bind(this);
     }
-
-    // shouldComponentUpdate(nextProps, nextState) {
-    // console.log((this.props.songName !== nextProps.songName) , this.props.songName.substring(0,50))
-    //     return (
-    //         (this.props.songName !== nextProps.songName)
-    //         || (this.props.songAuthor !== nextProps.songAuthor)
-    //         || (this.props.isActive !== nextProps.isActive)
-    //         || (this.props.activeColor !== nextProps.activeColor)
-    //     )
-    // }
-
+    
     _getItemLayout(data, index) {
         return ({
             length: 50,

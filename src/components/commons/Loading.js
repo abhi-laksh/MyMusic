@@ -20,7 +20,6 @@ function Loading({ currentTheme, theme }) {
             opacity: 1,
         }
     }
-    // console.log("Loading")
 
     return (
         <View

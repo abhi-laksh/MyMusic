@@ -33,7 +33,6 @@ class QueueToggler extends React.PureComponent {
                 >
                     <Button
                         onPress={() => { this.modal.makeVisible() }}
-                        // onPress={() => console.log("Button close")}
                         style={buttonStyle}
                     >
                         <FontelloIcon name="playlist-music-outline" size={24} color={iconColor} />

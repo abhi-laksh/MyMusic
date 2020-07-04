@@ -27,29 +27,6 @@ class CommonBG extends React.Component {
         const imgHeight = Image.resolveAssetSource(img).height;
 
         const { width, height } = e.nativeEvent.layout
-        // console.log(
-        //     "[width]",
-        //     width,
-
-        //     "[sWidth]",
-        //     sWidth,
-
-        //     "[imgWidth]",
-        //     imgWidth,
-
-        //     "[height]",
-        //     height,
-
-        //     "[sHeight]",
-        //     sHeight,
-
-        //     "[imgHeight]",
-        //     imgHeight,
-
-        //     "[ratio]",
-        //     (imgWidth / imgHeight) * 100
-        // );
-
 
         this.setState(() => ({ width, height, imgWidth, imgHeight, sHeight, sWidth }))
     }

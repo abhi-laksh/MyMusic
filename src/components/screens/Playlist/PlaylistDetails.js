@@ -106,10 +106,6 @@ class PlaylistDetails extends React.PureComponent {
         const contrast = theme.lightenDarken(contrastValue, theme.hexToRGB(currentTheme.background));
         const currentColor = currentTheme.text.primary;
 
-        // console.log();
-        // console.log("PL DETAILS", tracks)
-        // console.log();
-
         return (
             <View
                 style={[

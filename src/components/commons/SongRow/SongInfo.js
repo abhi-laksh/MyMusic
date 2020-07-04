@@ -18,7 +18,6 @@ class SongInfo extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        // console.log((this.props.songName !== nextProps.songName) , this.props.songName.substring(0,50))
         return (
             ((this.props.songName !== nextProps.songName)
                 || (this.props.songAuthor !== nextProps.songAuthor)

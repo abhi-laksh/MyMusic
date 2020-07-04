@@ -14,7 +14,9 @@ export function addTrack(track) {
         const { ...state } = getState();
         let newId;
         let lastId = state.tracks
-            && state.tracks.allIds && state.tracks.allIds.sort().pop();
+            && state.tracks.allIds && state.tracks.allIds.sort((a, b) => {
+                return (parseInt(a.split("-")[1])) > (parseInt(b.split("-")[1]));
+            }).pop();
 
         if (lastId) {
             newId = `T-${parseInt(lastId.split("-")[1]) + 1}`;
@@ -52,16 +54,26 @@ export function syncTracksInState(tracks) {
 
         let favourites = state.library && state.library.favourites.concat();
 
-
-
         let newId;
 
         let oldTracks = state.tracks && Object.assign({}, state.tracks.byId);
+        let oldTracksIDdddd = Object.keys(oldTracks);
         oldTracks = Object.values(oldTracks);
 
         let oldTrackAllIds = state.tracks && state.tracks.allIds.concat();
 
-        let lastId = oldTrackAllIds.concat().sort().pop();
+
+        console.log();
+        console.log("OLD::", oldTrackAllIds, oldTracksIDdddd);
+        console.log();
+
+        let lastId = oldTrackAllIds.concat().sort((a, b) => {
+            return (parseInt(a.split("-")[1])) > (parseInt(b.split("-")[1]));
+        }).pop();
+
+        console.log();
+        console.log("LAST ID:::", lastId);
+        console.log();
 
         if (lastId) {
             newId = parseInt(lastId.split("-")[1]) + 1;
@@ -69,7 +81,12 @@ export function syncTracksInState(tracks) {
             newId = 1;
         }
 
+        console.log();
+        console.log("NEW ID:::", newId);
+        console.log();
+
         /* 
+
             ? For Deleted Tracks
             (Set Theory)
             A = New List ; B = Old List;
@@ -80,9 +97,12 @@ export function syncTracksInState(tracks) {
         let deletedTracksByID = {};
         let deletedTracksAllIds = [];
 
+        console.log("DEL", deletedTracks);
+
         if (deletedTracks.length) {
 
             for (i = 0; i < deletedTracks.length; i++) {
+
                 deletedTracksAllIds.push(deletedTracks[i].id);
                 deletedTracksByID[deletedTracks[i].id] = undefined;
             }
@@ -135,6 +155,7 @@ export function syncTracksInState(tracks) {
 
         newTracksObject.length && newTracksObject.forEach((track) => {
             let id = `T-${newId}`;
+
             newAllTrackIds.push(id);
             newTracksById[id] = {
                 ...track,
@@ -143,6 +164,14 @@ export function syncTracksInState(tracks) {
             }
             newId++;
         });
+
+        console.log();
+        console.log("NEW::", newAllTrackIds);
+        console.log();
+
+        console.log();
+        console.log("OLD FILTER::", oldTrackAllIds.filter((e) => !deletedTracksAllIds.includes(e)));
+        console.log();
 
         if (
             (deletedTracks.length > 0)
@@ -160,6 +189,10 @@ export function syncTracksInState(tracks) {
                     ...oldTrackAllIds.filter((e) => !deletedTracksAllIds.includes(e)),
                     ...newAllTrackIds.concat()
                 ],
+                syncedTracksAllIds: _.union(
+                    (oldTrackAllIds.filter((e) => !deletedTracksAllIds.includes(e))),
+                    newAllTrackIds
+                ),
                 syncedPlaylistsById: Object.keys(syncedPLById).length ? syncedPLById : oldPlaylistById,
                 queue,
                 favourites,
@@ -169,6 +202,7 @@ export function syncTracksInState(tracks) {
 
     }
 }
+
 /* 
 
 

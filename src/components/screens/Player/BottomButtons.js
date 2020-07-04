@@ -80,7 +80,6 @@ class BottomButtons extends React.PureComponent {
                 <Button
                     style={styles.drawerButtonList}
                     onPress={this._toggleFav}
-                    // onPress={() => console.log("LOOP")}
                     activeOpacity={0.5}
                     underlayColor={"transparent"}
                     disabled={disabled}

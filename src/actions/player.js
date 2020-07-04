@@ -41,6 +41,7 @@ export function initializePlayer() {
           TrackPlayer.CAPABILITY_SKIP_TO_NEXT,
           TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS,
         ],
+        icon: require("../assets/images/music_thumbnail_default.png")
       });
       dispatch({
         type: PLAYER_INIT,

@@ -55,7 +55,6 @@ export async function loadTracks(pathOfDirToScan = RNFS.ExternalStorageDirectory
 }
 
 export function sortMusicList(data) {
-    console.log("Sorting....")
     return data.sort((a, b) => {
         return a.title.toLowerCase().localeCompare(b.title.toLowerCase());
     })

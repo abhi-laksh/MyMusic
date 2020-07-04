@@ -48,8 +48,25 @@ class Root extends React.Component {
 	updateTracksInStore = async () => {
 		try {
 			this.props.libraryStatus(this.props.newLoad, true, null);
-			await this.props.addMultipleInQueue(this.props.queue);
+
+			if (
+				this.props.queue
+				&& this.props.queue.length
+				&& !((await TrackPlayer.getQueue()).length > 0)
+			) {
+				await this.props.addMultipleInQueue(this.props.queue)
+			} else {
+				if (this.props.currentTrack) {
+					await this.props.addMultipleInQueue([this.props.currentTrack]);
+				}
+			}
+
+			// if (!this.props.currentTrack && this.props.queue && this.props.queue.length) {
+			// (await TrackPlayer.skip(this.props.queue[0]));
+			// }
+
 			let data = await this._syncFromLocalStorage();
+
 			if (data && data.musicList) {
 				await this.props.syncTracksInState(data.musicList);
 				this.setState(
@@ -63,9 +80,9 @@ class Root extends React.Component {
 			}
 		} catch (error) {
 			if (this.props.newLoad) {
-				this.props.libraryStatus(true, false, e);
+				this.props.libraryStatus(true, false, error);
 			} else {
-				this.props.libraryStatus(false, false, e);
+				this.props.libraryStatus(false, false, error);
 			}
 			console.warn("updateTracksInStore::: ", error);
 		}
@@ -90,6 +107,7 @@ class Root extends React.Component {
 
 function mapStateToProps(state) {
 	return {
+		currentTrack: state.player.currentTrack,
 		tracks: state.tracks,
 		queue: state.library && state.library.queue,
 		fetching: state.library && state.library.fetching,
@@ -103,7 +121,7 @@ function mapDispatchToProps(dispatch) {
 		libraryStatus: (newLoad, fetching, error) => dispatch(libraryStatus(newLoad, fetching, error)),
 		initializePlayer: () => dispatch(initializePlayer()),
 		syncTracksInState: (tracks) => dispatch(syncTracksInState(tracks)),
-		addMultipleInQueue: (tracks) => dispatch(addMultipleToQueue(tracks)),
+		addMultipleInQueue: (tracks, reset) => dispatch(addMultipleToQueue(tracks, reset)),
 	}
 
 }

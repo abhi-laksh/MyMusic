@@ -26,7 +26,6 @@ const GradientText = ({
     gColors,
     ...others
 }) => {
-    // console.log(`GradientText`, children)
     return (
         <MaskedView
             style={[
@@ -53,46 +52,3 @@ const GradientText = ({
 }
 
 export default GradientText;
-/*
-
-const GradientText = (props) => {
-    const {
-        children,
-        maskedStyle,
-        gradientStyle,
-        gradientViewStyle,
-        theme,
-        currentTheme,
-        angle = 90,
-        locations,
-        gColors,
-        ...others
-    } = this.props;
-    // console.log(`GradientText`, children)
-    return (
-        <MaskedView
-            style={[
-                styles.maskedView,
-                maskedStyle
-            ]}
-            maskElement={children}
-            {...others}
-        >
-            <ViewGradient
-                gradientStyle={[
-                    styles.viewGradient,
-                    gradientStyle,
-                ]}
-                angle={angle}
-                locations={locations}
-                gColors={gColors}
-                viewStyle={{}}
-                viewStyle={[
-                    gradientViewStyle,
-                ]}
-
-            ></ViewGradient>
-        </MaskedView>
-    )
-}
-*/

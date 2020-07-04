@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
 })
 
 class PopsOut extends React.PureComponent {
+
     constructor(props) {
         super(props);
         this.mode = new Animated.Value(0);
@@ -80,9 +81,11 @@ class PopsOut extends React.PureComponent {
         this.toggleFav = this.toggleFav.bind(this);
         this.handlePopsOut = this.handlePopsOut.bind(this);
     }
+
     toggleFav() {
         this.props.toggleFavourites(this.props.currentTrackId)
     }
+
     handlePopsOut() {
         Animated.sequence([
             Animated.timing(this.mode, {
@@ -91,9 +94,13 @@ class PopsOut extends React.PureComponent {
             })
         ]).start();
     }
+
     goToLyrics() {
-        this.props.navigation.navigate("LyricsScreen");
+        this.props.navigation.navigate("Lyrics", {
+            screen: "LyricsScreen"
+        });
     }
+
     render() {
         const { theme, currentTheme } = this.props;
         const iconColor = currentTheme.text.primary;
@@ -195,7 +202,6 @@ class PopsOut extends React.PureComponent {
                         /> */}
                         <Button
                             onPress={this.toggleFav}
-                            // onPress={() => console.log("Button heart")}
                             style={styles.popButton}
                         >
                             <FontelloIcon name={isFav ? "heart-cross" : "heart"} size={18} color={isFav ? themeColor : iconColor} />
@@ -226,6 +232,11 @@ class PopsOut extends React.PureComponent {
 function mapStateToProps(state) {
     let library = state.library;
     let player = state.player;
+
+
+    console.log();
+    console.log("FAV MP::", library.favourites);
+    console.log();
     return {
         isFavourite: library.favourites && library.favourites.includes(player.currentTrack),
         currentTrackId: player.currentTrack
@@ -239,19 +250,3 @@ function mapDispatchToProps(dispatch) {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withTheme(PopsOut));
-
-/*
-
-                    <ViewGradient
-                        gradientStyle={styles.popChildButtonsGradient}
-                        viewStyle={styles.popChildButtonsView}
-                        onlyBorder
-                    >
-                         <Button
-                            onPress={() => console.log("Button close")}
-                            style={styles.popButton}
-                        >
-                            <FontelloIcon name="playlist-music-outline" size={24} color={iconColor} />
-                        </Button>
-                    </ViewGradient>
-*/

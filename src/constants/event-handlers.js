@@ -10,7 +10,6 @@ async function eventHandler(store, data) {
 	});
 
 	TrackPlayer.addEventListener('remote-pause', () => {
-		console.log('remote-pause');
 		TrackPlayer.pause();
 	});
 
@@ -57,27 +56,22 @@ async function eventHandler(store, data) {
 	});
 
 	TrackPlayer.addEventListener('remote-stop', () => {
-		console.log('remote-stop');
 		TrackPlayer.stop();
 	});
 
 	TrackPlayer.addEventListener('remote-seek', async data => {
-		console.log('remote-seek');
 		await TrackPlayer.seekTo(data.position);
 	});
 
 	TrackPlayer.addEventListener('remote-jump-backward', async data => {
-		console.log('remote-jump-backward');
 		await TrackPlayer.seekTo(data.position - 10);
 	});
 
 	TrackPlayer.addEventListener('remote-jump-forward', async data => {
-		console.log('remote-jump-forward');
 		await TrackPlayer.seekTo(data.position + 10);
 	});
 
 	TrackPlayer.addEventListener('remote-duck', async data => {
-		console.log('remote-duck');
 		await TrackPlayer.setVolume(data.ducking ? 0.5 : 1);
 	});
 
@@ -110,27 +104,37 @@ async function eventHandler(store, data) {
 		const { player, library, tracks } = state;
 
 		if (player.controlType == "loop-one") {
+
 			await TrackPlayer.seekTo(0);
+
 		} else {
 			if (player.state === TrackPlayer.STATE_PLAYING) {
+
 				const queue = library && library.queue;
-				// console.log("ERRRRRRRRRRRRRRR", queue, player.init);
+
 				if (queue.length && (await TrackPlayer.getQueue()).length) {
+
 					if (player.controlType === "loop-all") {
 						// Play In Order
 						try {
+
 							await TrackPlayer.skip(queue[0]);
+
 						} catch (error) {
+
 							console.log("ERRRR IN LOOP::::::::::", error)
+
 						}
 					} else {
 						// Play In Shuffle
 						try {
+
 							let randomTrackId = this.props.queue
 								&& this.props.queue.length
 								&& this.props.queue[Math.floor(Math.random() * this.props.queue.length)];
 
-							if (randomTrackId
+							if (
+								randomTrackId
 								&& !JSON.stringify((await TrackPlayer.getQueue()))
 									.includes(randomTrackId)
 							) {

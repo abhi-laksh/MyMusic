@@ -76,8 +76,8 @@ class PlayerControl extends React.Component {
 			}
 		} else {
 			if (this.props.tracks && this.props.queue) {
+				
 				const randomTrackId = this.props.tracks.allIds[Math.floor(Math.random() * this.props.tracks.allIds.length)];
-				console.log("\n\n\n\nPLAYER CONTROL::::: \n\n\n\n", await TrackPlayer.getQueue());
 
 				if (!(this.props.queue.includes(randomTrackId))) {
 					await this.props.addToQueue(randomTrackId);
@@ -86,6 +86,7 @@ class PlayerControl extends React.Component {
 				} else {
 					await TrackPlayer.skip(randomTrackId);
 				}
+
 			}
 		}
 	}
@@ -213,56 +214,3 @@ function mapDispatchToProps(dispatch) {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withTheme(PlayerControl));
-
-/*
-<View
-                    style={{ 
-                        width: "100%"
-                    }}
-                >
-                    <ViewGradient
-                        gradientStyle={
-                            styles.lyricDrawerButtonGradient
-                        }
-                        viewStyle={styles.lyricDrawerButtonGradientView}
-                        onlyBorder
-                        top
-                        left
-                        right
-                    >
-                        <SharpBG
-                            style={styles.lyricDrawerButtonSharpBG}
-                            angle={45}
-                        />
-                        <Button
-                            style={styles.lyricDrawerButton}
-                            onPress={() => console.log("Playlist")}
-                        >
-                            <FontelloIcon name="lyrics" size={24} color={disable ? disabledColor : iconColor} />
-                        </Button>
-                    </ViewGradient>
-                    <ViewGradient
-                        gradientStyle={styles.lyricDrawerGradient}
-                        viewStyle={styles.lyricDrawerGradientView}
-                        onlyBorder
-                        // borderWidth={1}
-                        top
-                        left
-                        right
-                    >
-                        <GradientText>
-                            <MyAppText
-                                style={styles.lyricText}
-                                parentStyle={styles.lyricTextParent}
-                                size={15}
-                                numberOfLines={1}
-                                variant="bold"
-                            >
-                                Current Line of lyrics of song which is bring currently played.
-                                Current Line of lyrics of song which is bring currently played.
-                            </MyAppText>
-                        </GradientText>
-                    </ViewGradient>
-                </View>
-            </View >
-*/

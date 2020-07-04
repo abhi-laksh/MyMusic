@@ -6,7 +6,6 @@ import {
     PlaylistStack,
     FavouriteStack,
     LyricsStack,
-    SettingStack,
     SongInfoStack,
     SearchStack
 } from './StackNavigator';
@@ -32,45 +31,26 @@ function MyDrawer(props) {
                 name="Home"
                 component={HomeStack}
 
-            />
+            /> 
             <Drawer.Screen
                 name="Player"
                 component={PlayerStack}
                 options={{
-                    // gestureEnabled: false,
+                    gestureEnabled: false,
                 }}
             />
             <Drawer.Screen
                 name="Lyrics"
                 component={LyricsStack}
                 options={{
-                    // gestureEnabled: false,
+                    gestureEnabled: false,
                 }}
-            />
-            <Drawer.Screen
-                name="Setting"
-                component={SettingStack}
-                options={{
-                    // gestureEnabled: false,
-                    drawerIcon: ({ focused }) => (
-                        <FontelloIcon
-                            color={
-                                focused
-                                    ? theme.pallete.primary.main
-                                    : currentTheme.text.primary
-                            }
-                            size={24}
-                            name="music-box-multiple-outline"
-                        />
-                    )
-                }}
-
             />
             <Drawer.Screen
                 name="SongInfo"
                 component={SongInfoStack}
                 options={{
-                    // gestureEnabled: false,
+                    gestureEnabled: false,
                 }}
             />
             <Drawer.Screen

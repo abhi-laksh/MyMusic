@@ -31,7 +31,6 @@ class LyricsInput extends React.PureComponent {
     }
 
     _handleInput(val) {
-        // console.log(val);
         this.setState(
             () => ({
                 lyrics: val,
@@ -73,9 +72,6 @@ class LyricsInput extends React.PureComponent {
 
         const { addLyrics, navigation, currentTrack, currentTheme, theme, trackLyrics, ...others } = this.props;
         const themeColor = currentTheme.name === "dark" ? theme.pallete.primary.main : theme.pallete.secondary.main;
-
-        console.log("EDIT:::::", trackLyrics);
-
 
         return (
             <View
@@ -128,7 +124,7 @@ class LyricsInput extends React.PureComponent {
                 <Input
                     setRef={(ref) => { this._input = ref }}
                     gradientStyle={{
-                        flex: 1,
+                        // flex: 1,
                     }}
                     viewStyle={{
                         height: "auto",
@@ -138,13 +134,12 @@ class LyricsInput extends React.PureComponent {
                         // backgroundColor: "#666",
                         // height: "100%",
                         textAlignVertical: "top",
-                        paddingVertical: 0,
+                        // paddingVertical: 0,
                     }}
                     placeholder="Enter/Paste Lyrics"
                     multiline
                     // value={this.state.lyrics}
                     onChangeText={this._handleInput}
-                // maxLength={100000}
                 />
             </View>
 

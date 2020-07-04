@@ -114,7 +114,6 @@ function playlistsById(state = {}, action) {
 
 function addPlaylistId(state, action) {
     const { playlistId } = action;
-    // console.log("ADD PL :::::", state);
 
     return state.concat(playlistId);
 }
@@ -126,10 +125,6 @@ function removePlaylistId(state, action) {
     if (index > -1) {
         newState.splice(index, 1);
     }
-    // console.log();
-    // console.log("REMV PL:::", newState.indexOf(playlistId));
-    // console.log(); 
-
     return newState;
 }
 

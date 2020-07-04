@@ -12,7 +12,9 @@ export function addLyrics(trackId, lyrics) {
         const { ...state } = getState();
         let newId;
         let lastId = state.lyrics
-            && state.lyrics.allIds && state.lyrics.allIds.concat().sort().pop();
+            && state.lyrics.allIds && state.lyrics.allIds.concat().sort((a, b) => {
+                return (parseInt(a.split("-")[1])) > (parseInt(b.split("-")[1]));
+            }).pop();
 
         if (lastId) {
             newId = `LRC-${parseInt(lastId.split("-")[1]) + 1}`;

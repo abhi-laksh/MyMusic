@@ -36,6 +36,8 @@ const Input = ({
     theme,
     currentTheme,
     setRef,
+    value,
+    onChangeText,
     ...others
 }) => {
     const contrastValue = (currentTheme.name === "dark") ? 0.5 : -0.5;
@@ -68,6 +70,8 @@ const Input = ({
                 // disabled={disabled}
                 editable={(!disabled && !readOnly)}
                 placeholderTextColor={contrast}
+                onChangeText={onChangeText}
+                value={value}
                 {...others}
             />
             {(disabled) && (!readOnly) && <Icon name="cancel" style={{ paddingHorizontal: 8 }} size={24} color={theme.pallete.error.main} />}

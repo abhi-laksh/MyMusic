@@ -38,7 +38,6 @@ class MyModal extends React.PureComponent {
     }
     componentWillUnmount() {
         this.props.setRef(undefined);
-        // console.log("MOunted :::::::")
     }
     render() {
         const {

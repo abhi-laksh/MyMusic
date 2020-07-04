@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Text } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, ScrollView, Text, BackHandler } from 'react-native';
 import { withTheme } from '../../globals/ThemeProvider';
 import MyAppText from '../../commons/MyAppText';
 import ViewGradient from '../../commons/ViewGradient';
@@ -31,6 +31,7 @@ const SongInfoEditScreen = ({ currentTheme, modifyMetadata, theme, route, naviga
         : theme.lightenDarken(0.2, theme.hexToRGB(currentTheme.text.primary));
 
     const { params } = route;
+
     const track = (params && params.track) || ({
         title: "",
         album: "",
@@ -45,6 +46,13 @@ const SongInfoEditScreen = ({ currentTheme, modifyMetadata, theme, route, naviga
         size: track.size,
         path: track.dirPath,
     })
+
+    // Manually go back as nested stack doesnt remember Drawer Nav Item
+    const goBackHome = () => {
+        navigation.navigate("Home")
+        return true;
+    }
+
     const handleInput = (name) => (value) => {
         setValues({ ...values, [name]: value });
     }
@@ -57,7 +65,12 @@ const SongInfoEditScreen = ({ currentTheme, modifyMetadata, theme, route, naviga
 
     const duration = formatTime(track.duration);
 
-
+    useEffect(() => {
+        BackHandler.addEventListener("hardwareBackPress", goBackHome);
+        return () => {
+            BackHandler.removeEventListener("hardwareBackPress", goBackHome);
+        }
+    });
 
     return (
         <ScrollView
@@ -69,7 +82,6 @@ const SongInfoEditScreen = ({ currentTheme, modifyMetadata, theme, route, naviga
         >
             <MyAppText
                 size={13}
-                // variant={"semiBold"}
                 color={theme.pallete.error.main}
                 parentStyle={{
                     marginBottom: 16,
@@ -86,13 +98,9 @@ const SongInfoEditScreen = ({ currentTheme, modifyMetadata, theme, route, naviga
                 <Input
                     gradientStyle={styles.fullFlex}
                     viewStyle={styles.autoHeight}
-                    selectTextOnFocus={true}
-                    // autoFocus={true}
-                    // placeholder={"Enter Playlist Name"}
                     value={values.title}
                     onChangeText={handleInput("title")}
                     returnKeyType={"done"}
-                    multiline
                     blurOnSubmit
 
                 />
@@ -105,13 +113,10 @@ const SongInfoEditScreen = ({ currentTheme, modifyMetadata, theme, route, naviga
                 <Input
                     gradientStyle={styles.fullFlex}
                     viewStyle={styles.autoHeight}
-                    selectTextOnFocus={true}
                     // autoFocus={true}
-                    // placeholder={"Enter Playlist Name"}
                     value={values.album}
                     onChangeText={handleInput("album")}
                     returnKeyType={"done"}
-                    multiline
                 />
             </InfoRow>
             <InfoRow
@@ -122,12 +127,10 @@ const SongInfoEditScreen = ({ currentTheme, modifyMetadata, theme, route, naviga
                 <Input
                     gradientStyle={styles.fullFlex}
                     viewStyle={styles.autoHeight}
-                    selectTextOnFocus={true}
                     placeholder={"Enter Artist"}
                     value={values.artist}
                     onChangeText={handleInput("artist")}
                     returnKeyType={"done"}
-                    multiline
                     blurOnSubmit
                 />
             </InfoRow>
@@ -141,7 +144,6 @@ const SongInfoEditScreen = ({ currentTheme, modifyMetadata, theme, route, naviga
                     viewStyle={styles.autoHeight}
                     value={`${String(parseFloat(((track.size / 1024)) / 1024).toFixed(2))} MB`}
                     returnKeyType={"done"}
-                    multiline
                     disabled
                     readOnly
                 />
@@ -156,7 +158,6 @@ const SongInfoEditScreen = ({ currentTheme, modifyMetadata, theme, route, naviga
                     viewStyle={styles.autoHeight}
                     value={`${duration.mm} : ${duration.ss}`}
                     returnKeyType={"done"}
-                    multiline
                     disabled
                     readOnly
                 />
@@ -172,7 +173,6 @@ const SongInfoEditScreen = ({ currentTheme, modifyMetadata, theme, route, naviga
                     value={values.path}
                     disabled
                     readOnly
-                    multiline
                 />
             </InfoRow>
             <ViewGradient

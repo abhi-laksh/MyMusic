@@ -62,7 +62,6 @@ function Header(props) {
 
     const currentColor = currentTheme.text.primary;
     // const navigation = useNavigation();
-    // console.log("HEADER:::", props.searchText)
 
     return (
         <HeaderLayout>

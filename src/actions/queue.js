@@ -23,7 +23,6 @@ export function addToQueue(trackId) {
                     && state.tracks.byId[trackId]
                 if (track) {
                     currentQueue.push(trackId);
-                    console.log("ADD TO QUEUE", track, currentQueue);
                     await TrackPlayer.add(track);
                     dispatch(updateQueue(currentQueue));
                 }
@@ -86,6 +85,7 @@ export function addMultipleToQueue(trackIds, reset = true) {
                 let currentQueue = state.library && state.library.queue;
                 let currentQueueInTP = await TrackPlayer.getQueue();
                 let tracks = state.tracks;
+
                 if (reset) {
                     await TrackPlayer.reset();
                     currentQueue = [];
@@ -104,8 +104,8 @@ export function addMultipleToQueue(trackIds, reset = true) {
 
                 dispatch(updateQueue(currentQueue.concat(trackIds)));
             } catch (err) {
-                console.warn(`ERR IN ADD MULTIPLE QUEUE::: ${error}`);
-                dispatch(libraryStatus(false, false, error));
+                console.warn(`ERR IN ADD MULTIPLE QUEUE::: ${err}`);
+                dispatch(libraryStatus(false, false, err));
             }
         }
     }

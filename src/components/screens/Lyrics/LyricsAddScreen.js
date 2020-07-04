@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, ScrollView, BackHandler } from 'react-native';
 import { withTheme } from '../../globals/ThemeProvider';
 import MyAppText from '../../commons/MyAppText';
 import GradientText from '../../commons/GradientText';
@@ -46,9 +46,19 @@ const LyricsAddScreen = ({ addLyrics, navigation, currentTrack, currentTheme, tr
     }
 
     const iconColor = currentTheme.text.primary;
-    console.log();
-    console.log("LYRICS:::", trackLyrics);
-    console.log();
+
+    // Manually go back as nested stack doesnt remember Drawer Nav Item
+    const goBackHome = () => {
+        navigation.navigate("Home")
+        return true;
+    }
+
+    useEffect(() => {
+        BackHandler.addEventListener("hardwareBackPress", goBackHome);
+        return () => {
+            BackHandler.removeEventListener("hardwareBackPress", goBackHome);
+        }
+    });
 
     return (
         <View style={[

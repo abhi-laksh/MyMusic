@@ -56,12 +56,12 @@ export function addNewPlaylist(name, tracks = []) {
     return async (dispatch, getState) => {
 
         const { ...state } = getState();
-        // console.log("Before", getState().playlists.allIds)
-        // console.log();
-        
+
         let newId;
         let lastId = state.playlists
-            && state.playlists.allIds && state.playlists.allIds.concat().sort().pop();
+            && state.playlists.allIds && state.playlists.allIds.concat().sort((a, b) => {
+                return (parseInt(a.split("-")[1])) > (parseInt(b.split("-")[1]));
+            }).pop();
         if (lastId) {
             newId = `PL-${parseInt(lastId.split("-")[1]) + 1}`;
         } else {

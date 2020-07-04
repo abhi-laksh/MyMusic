@@ -53,7 +53,7 @@ function Header(props) {
                             backgroundColor: currentTheme.background,
                         },
                     ]}
-                    onPress={() => navigation.goBack()}
+                    onPress={() => navigation.navigate("Home")}
                 >
                     <Icon name="chevron-left" size={30} color={color} />
                 </Button>

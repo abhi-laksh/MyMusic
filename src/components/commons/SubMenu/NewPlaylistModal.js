@@ -82,7 +82,6 @@ class NewPlaylistModal extends React.PureComponent {
     }
 
     _handleInput(val) {
-        // console.log(val);
         this.setState(() => ({ value: val }))
     }
 
@@ -123,7 +122,6 @@ class NewPlaylistModal extends React.PureComponent {
                     style={styles.buttonGroupParent}
                 >
                     <Button
-                        // onPress={() => console.log("HIII")}
                         onPress={this.close}
                         style={[styles.buttonCancel, { borderColor: bgContrast }]}
                     >
@@ -144,7 +142,6 @@ class NewPlaylistModal extends React.PureComponent {
                     >
                         <Button
                             onPress={this._addToNewPlaylist}
-                            // onPress={() => this._resetNewPLInput()}
                             underlayColor={"rgba(255,255,255,0.2)"}
                         >
                             <View

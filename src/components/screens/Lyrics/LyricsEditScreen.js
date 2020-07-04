@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableWithoutFeedback, KeyboardAvoidingView, TextInput } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, ScrollView, TouchableWithoutFeedback, KeyboardAvoidingView, TextInput, BackHandler } from 'react-native';
 import { withTheme } from '../../globals/ThemeProvider';
 import MyAppText from '../../commons/MyAppText';
 import GradientText from '../../commons/GradientText';
@@ -32,30 +32,36 @@ const styles = StyleSheet.create({
     },
 });
 // TODO : Two Btns -> paste, file
-class LyricsEditScreen extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-    render() {
-        const { addLyrics, navigation, currentTrack, currentTheme, theme, trackLyrics, ...others } = this.props;
-        const themeColor = currentTheme.name === "dark" ? theme.pallete.primary.main : theme.pallete.secondary.main;
 
-        // console.log("EDIT::::");
-
-        return (
-            <View style={[
-                styles.parent,
-                {
-                    backgroundColor: currentTheme.background,
-                    // alignItems: "center",
-                    justifyContent: "center",
-                }
-            ]}>
-                <LyricsInput navigation={navigation} />
-            </View>
-        );
+const LyricsEditScreen = ({ addLyrics, navigation, currentTrack, currentTheme, theme, trackLyrics, ...props }) => {
+    const themeColor = currentTheme.name === "dark" ? theme.pallete.primary.main : theme.pallete.secondary.main;
+    
+    // Manually go back as nested stack doesnt remember Drawer Nav Item
+    const goBackHome = () => {
+        navigation.navigate("Home")
+        return true;
     }
-}
+
+    useEffect(() => {
+        BackHandler.addEventListener("hardwareBackPress", goBackHome);
+        return () => {
+            BackHandler.removeEventListener("hardwareBackPress", goBackHome);
+        }
+    });
+    
+    return (
+        <View style={[
+            styles.parent,
+            {
+                backgroundColor: currentTheme.background,
+                // alignItems: "center",
+                justifyContent: "center",
+            }
+        ]}>
+            <LyricsInput navigation={navigation} />
+        </View>
+    );
+};
 
 function mapStateToProps(state) {
     const currentTrack = state.tracks.byId[state.player.currentTrack];
@@ -73,36 +79,3 @@ function mapDispatchToProps(dispatch) {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withTheme(LyricsEditScreen));
-/*
-
-        <View style={[styles.parent, { backgroundColor: currentTheme.background }]}>
-            <MyAppText style={{
-                textAlign: "center"
-            }}>
-                LyricsEditScreen
-            </MyAppText>
-        </View>
-
-
-                <Input
-                    setRef={(ref) => { this._input = ref }}
-                    gradientStyle={{
-                        flex: 1,
-                    }}
-                    viewStyle={{
-                        height: "auto",
-                        // flex: 1,
-                    }}
-                    inputStyle={{
-                        // backgroundColor: "#666",
-                        // height: "100%",
-                        textAlignVertical: "top",
-                        paddingVertical: 0,
-                    }}
-                    placeholder="Enter/Paste Lyrics"
-                    multiline
-                    // value={this.state.lyrics}
-                    onEndEditing={this._handleInput}
-                    maxLength={100000}
-                />
-*/

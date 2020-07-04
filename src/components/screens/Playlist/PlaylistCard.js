@@ -100,8 +100,6 @@ class PlaylistCard extends React.PureComponent {
         const contrast = theme.lightenDarken(contrastValue, theme.hexToRGB(currentTheme.background));
         const currentColor = currentTheme.text.primary;
 
-        console.log("PLAYLIST CARD:::", tracks);
-
         return (
             <Button
                 onPress={this._navigateToPLTracks}
@@ -167,97 +165,3 @@ function mapDispatchToProps(dispatch) {
 
 
 export default connect(null, mapDispatchToProps)(withTheme(PlaylistCard));
-
-/*
-
-<Button
-            onPress={() => console.log("Hii")}
-            style={{
-                // backgroundColor: "#000",
-                flex: 1,
-                flexGrow: 1,
-                // marginVertical: 8,
-                margin: 8,
-                height: 148,
-                borderRadius: 8,
-                overflow: "hidden",
-            }}
-        >
-            <View
-                style={{
-                    flex: 1,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderRadius: 8,
-                    overflow: "hidden",
-                }}
-            >
-                <ImageBackground
-                    style={{
-                        width: "100%",
-                        height: "100%",
-                        flex: 1,
-                    }}
-                    source={img}
-                >
-                    <ViewGradient
-                        gColors={[
-                            "rgba(0,0,0,.5)",
-                            theme.hexToRGB(themeColorSecondary, 0.15),
-                            theme.hexToRGB(themeColorPrimary, 0.5),
-                        ]}
-                        gradientStyle={{
-                            width: "100%",
-                            height: "100%",
-                            justifyContent: "flex-end",
-                        }}
-                        viewStyle={{
-                            padding: 0,
-                            flexDirection: "row",
-                        }}
-                        angle={10}
-                        locations={[
-                            0.2,
-                            0.6,
-                            0.9
-                        ]}
-                        borderWidth={0}
-                    >
-                        <MyAppText
-                            color={"#fff"}
-                            parentStyle={{
-                                flexGrow: 1,
-                                // backgroundColor: "#888",
-                                paddingHorizontal: 0,
-                                alignItems: "center",
-                                marginLeft: 8,
-                            }}
-                            style={{
-                                // backgroundColor: "#f0e",
-                                // textAlign:"center",
-                            }}
-                            size={13}
-                            variant={"semiBold"}
-                            numberOfLines={1}
-                        >
-                            PlaylistCardPlaylistCardPlaylistCard
-                    </MyAppText>
-
-                        <Button
-                            style={{
-                                // backgroundColor: "#666",
-                                width: 30,
-                                height: 30,
-                                alignItems: "center",
-                                justifyContent: "center"
-                            }}
-                            onPress={() => console.log("PLAY")}
-                        >
-                            <FontelloIcon color={"#fff"} size={16} name={"play"} />
-                        </Button>
-                    </ViewGradient>
-                </ImageBackground>
-            </View>
-        </Button>
-
-*/
